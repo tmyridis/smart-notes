@@ -15,6 +15,7 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { NavLink } from "react-router";
 
 export function NavMain({
   items,
@@ -34,11 +35,12 @@ export function NavMain({
     <SidebarGroup>
       <SidebarMenu>
         {items.map((item) => (
-          <div
+          <NavLink
+            to={item.url}
             key={item.title}
-            onClick={() => {
-              console.log(item);
-            }}
+            className={({ isActive }) =>
+              isActive ? "bg-zinc-800 rounded-md" : ""
+            }
           >
             <SidebarMenuItem>
               <div>
@@ -48,7 +50,7 @@ export function NavMain({
                 </SidebarMenuButton>
               </div>
             </SidebarMenuItem>
-          </div>
+          </NavLink>
         ))}
       </SidebarMenu>
     </SidebarGroup>

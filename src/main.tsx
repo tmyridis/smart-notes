@@ -4,7 +4,9 @@ import "./index.css";
 import App from "./App.tsx";
 import { ThemeProvider } from "@/components/theme-provider";
 import { BrowserRouter, Routes, Route } from "react-router";
-import Test from "./components/test.tsx";
+import Notes from "./components/Notes/notes.tsx";
+import Tasks from "./components/Tasks/tasks.tsx";
+import SingleNote from "./components/SingleNote/single-note.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -12,7 +14,10 @@ createRoot(document.getElementById("root")!).render(
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<App />}>
-            <Route path="test" element={<Test />}></Route>
+            <Route path="notes" element={<Notes />}>
+              <Route path=":id" element={<SingleNote />} />
+            </Route>
+            <Route path="tasks" element={<Tasks />}></Route>
           </Route>
         </Routes>
       </BrowserRouter>
