@@ -1,3 +1,6 @@
+import { useOutletContext } from "react-router";
+
 export default function SingleNote() {
-  return <>single note</>;
+  const notes: any = useOutletContext();
+  return <>single note {notes[0].id}</>;
 }

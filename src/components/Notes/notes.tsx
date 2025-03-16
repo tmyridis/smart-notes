@@ -52,7 +52,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-import { NavLink, Outlet } from "react-router";
+import { NavLink, Outlet, redirect } from "react-router";
 import { useState } from "react";
 import {
   Dialog,
@@ -63,7 +63,6 @@ import {
 } from "@radix-ui/react-dialog";
 import { DialogFooter, DialogHeader } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { rename } from "fs";
 export default function Notes() {
   const DUMMY_NOTES = [
     {
@@ -107,19 +106,16 @@ export default function Notes() {
   const [notes, setNotes] = useState(DUMMY_NOTES);
   const [folderRename, setFolderRename] = useState("");
   const [noteToAdd, setNoteToAdd] = useState("");
-  const [closeContext, setCloseContext] = useState(false);
+  const [folderAdd, setFolderAdd] = useState("");
 
   const deleteFolder = (id: number) => {
-    setCloseContext(false);
     var tempNotes = notes;
     tempNotes = tempNotes.filter((folder) => folder.id !== id);
     console.log(tempNotes);
     setNotes(tempNotes);
-    setCloseContext(true);
   };
 
   const renameFolder = (id: number, newName: string) => {
-    setCloseContext(false);
     var tempNotes = notes;
     var renamed = tempNotes.map((obj) => {
       if (obj.id === id) {
@@ -129,11 +125,9 @@ export default function Notes() {
     });
 
     setNotes(renamed);
-    setCloseContext(true);
   };
 
   const addNote = (folderId: number, title: string) => {
-    setCloseContext(false);
     var tempNotes = notes;
     var newNote = {
       title: title,
@@ -149,7 +143,36 @@ export default function Notes() {
     console.log(tempNotes);
 
     setNoteToAdd("");
-    setCloseContext(true);
+  };
+
+  const deleteNote = (folderId: number, noteId: number) => {
+    var tempNotes = JSON.parse(JSON.stringify(notes));
+    console.log(notes);
+    var folderItems = tempNotes.filter(
+      (obj: { id: number }) => obj.id === folderId
+    )[0].items;
+    var noteIndex = folderItems.findIndex(
+      (obj: { id: number }) => obj.id === noteId
+    );
+    folderItems.splice(noteIndex, 1);
+
+    tempNotes.filter((obj: { id: number }) => obj.id === folderId)[0].items =
+      folderItems;
+    console.log(tempNotes);
+    setNotes(tempNotes);
+  };
+
+  const createFolder = (folderName: string) => {
+    var newFolder = {
+      folder: folderName,
+      id: 5178951,
+      items: [],
+    };
+
+    var tempNotes = notes;
+    tempNotes.push(newFolder);
+    setNotes(tempNotes);
+    setFolderAdd("");
   };
 
   return (
@@ -158,9 +181,50 @@ export default function Notes() {
         <SidebarGroup>
           <SidebarGroupLabel className="font-bold text-md flex justify-between mb-2">
             <h1>My Notes</h1>
-            <div>
-              <FolderPen className="w-4" />
-            </div>
+            <AlertDialog>
+              <AlertDialogTrigger>
+                <Button variant="ghost" size="icon">
+                  <FolderPen />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent className="sm:max-w-[425px]">
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Create new folder</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Add your folder's title. Click create when you're done.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="note" className="text-right">
+                      Folder name
+                    </Label>
+                    <Input
+                      id="note"
+                      value={folderAdd}
+                      onChange={(e) => {
+                        setFolderAdd(e.target.value);
+                      }}
+                      className="col-span-3"
+                    />
+                  </div>
+                </div>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction>
+                    <Button
+                      type="submit"
+                      disabled={folderAdd === ""}
+                      onClick={() => {
+                        createFolder(folderAdd);
+                      }}
+                    >
+                      Create folder
+                    </Button>
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </SidebarGroupLabel>
           <SidebarMenu>
             {notes.map((item) => (
@@ -219,6 +283,7 @@ export default function Notes() {
                             </div>
                           </div>
                           <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction>
                               <Button
                                 type="submit"
@@ -270,6 +335,7 @@ export default function Notes() {
                             </div>
                           </div>
                           <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction>
                               <Button
                                 type="submit"
@@ -355,15 +421,39 @@ export default function Notes() {
                             <Separator className="bg-zinc-600 mt-1" />
                           </ContextMenuTrigger>
                           <ContextMenuContent className="w-64">
-                            <ContextMenuItem inset>
-                              <Pencil className="text-muted-foreground" />
-                              <span>Rename note</span>
-                            </ContextMenuItem>
-                            <Separator className="bg-zinc-600 mt-1" />
-                            <ContextMenuItem inset>
-                              <Trash2 className="text-muted-foreground" />
-                              <span>Delete note</span>
-                            </ContextMenuItem>
+                            <AlertDialog>
+                              <AlertDialogTrigger className="w-full">
+                                <ContextMenuItem
+                                  inset
+                                  onSelect={(e) => e.preventDefault()}
+                                >
+                                  <Trash2 className="text-muted-foreground" />
+                                  <span>Delete note</span>
+                                </ContextMenuItem>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Do you wish to delete note named:{" "}
+                                    {subItem.title}
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    This action cannot be undone. This will
+                                    permanently delete this note.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={() => {
+                                      deleteNote(item.id, subItem.id);
+                                    }}
+                                  >
+                                    Delete note
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           </ContextMenuContent>
                         </ContextMenu>
                       ))}
@@ -375,7 +465,7 @@ export default function Notes() {
           </SidebarMenu>
         </SidebarGroup>
       </div>
-      <Outlet />
+      <Outlet context={notes} />
     </>
   );
 }
