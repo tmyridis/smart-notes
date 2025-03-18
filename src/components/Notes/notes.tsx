@@ -63,6 +63,7 @@ import {
 } from "@radix-ui/react-dialog";
 import { DialogFooter, DialogHeader } from "../ui/dialog";
 import { Button } from "../ui/button";
+import { ScrollArea } from "../ui/scroll-area";
 export default function Notes() {
   const DUMMY_NOTES = [
     {
@@ -79,6 +80,96 @@ export default function Notes() {
           title: "test notes title",
           content: "test notes content lirum gua",
           id: 5821515129121,
+          createdAt: "test",
+        },
+      ],
+    },
+    {
+      folder: "test folder2",
+      id: 25661,
+      items: [
+        {
+          title: "test notes title",
+          content: "test notes content lirum gua",
+          id: 2223,
+          createdAt: "test",
+        },
+        {
+          title: "test notes title",
+          content: "test notes content lirum gua",
+          id: 5526,
+          createdAt: "test",
+        },
+      ],
+    },
+    {
+      folder: "test folder2",
+      id: 25661,
+      items: [
+        {
+          title: "test notes title",
+          content: "test notes content lirum gua",
+          id: 2223,
+          createdAt: "test",
+        },
+        {
+          title: "test notes title",
+          content: "test notes content lirum gua",
+          id: 5526,
+          createdAt: "test",
+        },
+      ],
+    },
+    {
+      folder: "test folder2",
+      id: 25661,
+      items: [
+        {
+          title: "test notes title",
+          content: "test notes content lirum gua",
+          id: 2223,
+          createdAt: "test",
+        },
+        {
+          title: "test notes title",
+          content: "test notes content lirum gua",
+          id: 5526,
+          createdAt: "test",
+        },
+      ],
+    },
+    {
+      folder: "test folder2",
+      id: 25661,
+      items: [
+        {
+          title: "test notes title",
+          content: "test notes content lirum gua",
+          id: 2223,
+          createdAt: "test",
+        },
+        {
+          title: "test notes title",
+          content: "test notes content lirum gua",
+          id: 5526,
+          createdAt: "test",
+        },
+      ],
+    },
+    {
+      folder: "test folder2",
+      id: 25661,
+      items: [
+        {
+          title: "test notes title",
+          content: "test notes content lirum gua",
+          id: 2223,
+          createdAt: "test",
+        },
+        {
+          title: "test notes title",
+          content: "test notes content lirum gua",
+          id: 5526,
           createdAt: "test",
         },
       ],
@@ -177,10 +268,10 @@ export default function Notes() {
 
   return (
     <>
-      <div className="bg-zinc-800 w-1/6 h-screen">
+      <ScrollArea className="bg-zinc-200 dark:bg-zinc-800 w-1/6 min-h-full h-screen">
         <SidebarGroup>
           <SidebarGroupLabel className="font-bold text-md flex justify-between mb-2">
-            <h1>My Notes</h1>
+            My Notes
             <AlertDialog>
               <AlertDialogTrigger>
                 <Button variant="ghost" size="icon">
@@ -238,9 +329,9 @@ export default function Notes() {
                     <ContextMenuTrigger>
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton tooltip={item.folder}>
-                          <h1 className="text-md font-semibold">
+                          <div className="text-md font-semibold">
                             {item.folder}
-                          </h1>
+                          </div>
                           <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
@@ -399,21 +490,21 @@ export default function Notes() {
                                 <div
                                   className={
                                     isActive
-                                      ? "bg-zinc-700 group hover:bg-zinc-700 rounded-md px-5 py-2"
-                                      : "group hover:bg-zinc-700 rounded-md px-5 py-2"
+                                      ? "bg-zinc-300 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-700 rounded-md px-5 py-2"
+                                      : "hover:bg-zinc-300 dark:hover:bg-zinc-700 rounded-md px-5 py-2"
                                   }
                                 >
                                   <div className="grid">
-                                    <h1 className="font-bold pb-3">
+                                    <div className="font-bold pb-3">
                                       {subItem.title}
-                                    </h1>
+                                    </div>
                                     <p>{`${subItem.content.substring(
                                       0,
                                       30
                                     )}...`}</p>
-                                    <h5 className="text-xs pt-3">
+                                    <div className="text-xs pt-3">
                                       Created at {subItem.createdAt}
-                                    </h5>
+                                    </div>
                                   </div>
                                 </div>
                               )}
@@ -464,7 +555,7 @@ export default function Notes() {
             ))}
           </SidebarMenu>
         </SidebarGroup>
-      </div>
+      </ScrollArea>
       <Outlet context={notes} />
     </>
   );

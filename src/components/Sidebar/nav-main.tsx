@@ -39,7 +39,7 @@ export function NavMain({
             to={item.url}
             key={item.title}
             className={({ isActive }) =>
-              isActive ? "bg-zinc-800 rounded-md" : ""
+              isActive ? "bg-zinc-200 dark:bg-zinc-800 rounded-md" : ""
             }
           >
             <SidebarMenuItem>

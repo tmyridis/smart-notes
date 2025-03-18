@@ -15,13 +15,14 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Outlet } from "react-router";
+import { ModeToggle } from "./components/mode-toggle";
 function App() {
   return (
     <>
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
-          <div className="flex">
+          <div className="flex min-h-screen">
             <Outlet />
             {/* <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
               <div className="flex items-center gap-2 px-4">
@@ -51,6 +52,9 @@ function App() {
             </div>
             <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
           </div> */}
+          <div className="fixed right-5 top-5">
+            <ModeToggle />
+          </div>
         </SidebarInset>
       </SidebarProvider>
     </>
