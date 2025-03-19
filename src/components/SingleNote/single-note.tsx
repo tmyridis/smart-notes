@@ -5,7 +5,7 @@ export default function SingleNote() {
   const notes: any = useOutletContext();
   return (
     <div className="w-full min-h-screen">
-      <Tiptap />
+      <Tiptap notes={notes} />
     </div>
   );
 }

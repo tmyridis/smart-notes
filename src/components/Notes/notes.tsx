@@ -68,126 +68,126 @@ export default function Notes() {
   const DUMMY_NOTES = [
     {
       folder: "test folder 1",
-      id: 12512516,
+      id: 1,
       items: [
         {
           title: "test notes title",
           content: "test notes content lirum gua",
-          id: 589121,
+          id: 11,
           createdAt: "13/3/2025",
         },
         {
           title: "test notes title",
           content: "test notes content lirum gua",
-          id: 5821515129121,
+          id: 12,
           createdAt: "test",
         },
       ],
     },
     {
       folder: "test folder2",
-      id: 25661,
+      id: 2,
       items: [
         {
           title: "test notes title",
           content: "test notes content lirum gua",
-          id: 2223,
+          id: 21,
           createdAt: "test",
         },
         {
           title: "test notes title",
           content: "test notes content lirum gua",
-          id: 5526,
+          id: 22,
           createdAt: "test",
         },
       ],
     },
     {
       folder: "test folder2",
-      id: 25661,
+      id: 3,
       items: [
         {
           title: "test notes title",
           content: "test notes content lirum gua",
-          id: 2223,
+          id: 31,
           createdAt: "test",
         },
         {
           title: "test notes title",
           content: "test notes content lirum gua",
-          id: 5526,
+          id: 32,
           createdAt: "test",
         },
       ],
     },
     {
       folder: "test folder2",
-      id: 25661,
+      id: 4,
       items: [
         {
           title: "test notes title",
           content: "test notes content lirum gua",
-          id: 2223,
+          id: 41,
           createdAt: "test",
         },
         {
           title: "test notes title",
           content: "test notes content lirum gua",
-          id: 5526,
+          id: 42,
           createdAt: "test",
         },
       ],
     },
     {
       folder: "test folder2",
-      id: 25661,
+      id: 5,
       items: [
         {
           title: "test notes title",
           content: "test notes content lirum gua",
-          id: 2223,
+          id: 51,
           createdAt: "test",
         },
         {
           title: "test notes title",
           content: "test notes content lirum gua",
-          id: 5526,
+          id: 52,
           createdAt: "test",
         },
       ],
     },
     {
       folder: "test folder2",
-      id: 25661,
+      id: 6,
       items: [
         {
           title: "test notes title",
           content: "test notes content lirum gua",
-          id: 2223,
+          id: 61,
           createdAt: "test",
         },
         {
           title: "test notes title",
           content: "test notes content lirum gua",
-          id: 5526,
+          id: 62,
           createdAt: "test",
         },
       ],
     },
     {
       folder: "test folder2",
-      id: 25661,
+      id: 7,
       items: [
         {
           title: "test notes title",
           content: "test notes content lirum gua",
-          id: 2223,
+          id: 71,
           createdAt: "test",
         },
         {
           title: "test notes title",
           content: "test notes content lirum gua",
-          id: 5526,
+          id: 72,
           createdAt: "test",
         },
       ],
@@ -268,14 +268,14 @@ export default function Notes() {
 
   return (
     <>
-      <ScrollArea className="bg-zinc-200 dark:bg-zinc-800 w-1/6 min-h-full h-screen">
+      <ScrollArea className="bg-zinc-200 dark:bg-zinc-800 w-80 min-h-full h-screen flex-none">
         <SidebarGroup>
           <SidebarGroupLabel className="font-bold text-md flex justify-between mb-2">
             My Notes
             <AlertDialog>
-              <AlertDialogTrigger>
-                <Button variant="ghost" size="icon">
-                  <FolderPen />
+              <AlertDialogTrigger asChild>
+                <Button variant={"ghost"}>
+                  <FolderPen className="size-4" />
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent className="sm:max-w-[425px]">
@@ -319,11 +319,7 @@ export default function Notes() {
           </SidebarGroupLabel>
           <SidebarMenu>
             {notes.map((item) => (
-              <Collapsible
-                key={item.folder}
-                asChild
-                className="group/collapsible"
-              >
+              <Collapsible key={item.id} asChild className="group/collapsible">
                 <SidebarMenuItem>
                   <ContextMenu>
                     <ContextMenuTrigger>

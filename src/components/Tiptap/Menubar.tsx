@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ChangeEvent, useCallback, useState } from "react";
 import Highlight from "@tiptap/extension-highlight";
 import TextAlign from "@tiptap/extension-text-align";
 import { Editor, EditorContent, useEditor } from "@tiptap/react";
@@ -20,15 +20,38 @@ import {
   TextQuote,
   Code,
   Minus,
+  Image,
 } from "lucide-react";
 import { Toggle } from "../ui/toggle";
+
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+} from "../ui/dropdown-menu";
+import { Button } from "../ui/button";
+import { Separator } from "../ui/separator";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 
 export default function Menubar({ editor }: { editor: Editor | null }) {
   if (!editor) {
     return null;
   }
 
-  const Options = [
+  const onImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      editor
+        .chain()
+        .focus()
+        .setImage({ src: URL.createObjectURL(event.target.files[0]) })
+        .run();
+    }
+  };
+
+  const headingOptions = [
     {
       icon: <Heading1 className="size-4" />,
       onClick: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
@@ -59,6 +82,9 @@ export default function Menubar({ editor }: { editor: Editor | null }) {
       onClick: () => editor.chain().focus().toggleStrike().run(),
       preesed: editor.isActive("strike"),
     },
+  ];
+
+  const alignOptions = [
     {
       icon: <AlignLeft className="size-4" />,
       onClick: () => editor.chain().focus().setTextAlign("left").run(),
@@ -74,6 +100,9 @@ export default function Menubar({ editor }: { editor: Editor | null }) {
       onClick: () => editor.chain().focus().setTextAlign("right").run(),
       preesed: editor.isActive({ textAlign: "right" }),
     },
+  ];
+
+  const options = [
     {
       icon: <List className="size-4" />,
       onClick: () => editor.chain().focus().toggleBulletList().run(),
@@ -83,11 +112,6 @@ export default function Menubar({ editor }: { editor: Editor | null }) {
       icon: <ListOrdered className="size-4" />,
       onClick: () => editor.chain().focus().toggleOrderedList().run(),
       preesed: editor.isActive("orderedList"),
-    },
-    {
-      icon: <Highlighter className="size-4" />,
-      onClick: () => editor.chain().focus().toggleHighlight().run(),
-      preesed: editor.isActive("highlight"),
     },
     {
       icon: <TextQuote className="size-4" />,
@@ -107,8 +131,8 @@ export default function Menubar({ editor }: { editor: Editor | null }) {
   ];
 
   return (
-    <div className="p-1 space-x-2 z-50">
-      {Options.map((option, index) => (
+    <div className="flex gap-x-2 pl-5 py-1 h-10">
+      {headingOptions.map((option, index) => (
         <Toggle
           key={index}
           pressed={option.preesed}
@@ -117,6 +141,88 @@ export default function Menubar({ editor }: { editor: Editor | null }) {
           {option.icon}
         </Toggle>
       ))}
+      <Separator orientation="vertical" />
+      {alignOptions.map((option, index) => (
+        <Toggle
+          key={index}
+          pressed={option.preesed}
+          onPressedChange={option.onClick}
+        >
+          {option.icon}
+        </Toggle>
+      ))}
+      <Separator orientation="vertical" />
+      {options.map((option, index) => (
+        <Toggle
+          key={index}
+          pressed={option.preesed}
+          onPressedChange={option.onClick}
+        >
+          {option.icon}
+        </Toggle>
+      ))}
+      <Separator orientation="vertical" />
+      <DropdownMenu onOpenChange={() => console.log("tyest")}>
+        <DropdownMenuTrigger asChild>
+          <Button variant={"ghost"}>
+            <Highlighter className="size-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem>
+            <Toggle
+              className="w-full"
+              pressed={editor.isActive("highlight", { color: "red" })}
+              onPressedChange={() =>
+                editor.chain().focus().toggleHighlight({ color: "red" }).run()
+              }
+            >
+              Red
+            </Toggle>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Toggle
+              className="w-full"
+              pressed={editor.isActive("highlight", { color: "yellow" })}
+              onPressedChange={() =>
+                editor
+                  .chain()
+                  .focus()
+                  .toggleHighlight({ color: "yellow" })
+                  .run()
+              }
+            >
+              Yellow
+            </Toggle>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Toggle
+              className="w-full"
+              pressed={editor.isActive("highlight", { color: "#74c0fc" })}
+              onPressedChange={() =>
+                editor
+                  .chain()
+                  .focus()
+                  .toggleHighlight({ color: "#74c0fc" })
+                  .run()
+              }
+            >
+              Blue
+            </Toggle>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <Button className="" variant={"ghost"}>
+        <Label htmlFor="picture">
+          <Image className="size-4" />
+        </Label>
+        <input
+          id="picture"
+          type="file"
+          className="sr-only w-0"
+          onChange={onImageChange}
+        />
+      </Button>
     </div>
   );
 }
