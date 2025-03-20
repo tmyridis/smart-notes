@@ -72,13 +72,13 @@ export default function Notes() {
       items: [
         {
           title: "test notes title",
-          content: "test notes content lirum gua",
+          content: "lore12151",
           id: 11,
           createdAt: "13/3/2025",
         },
         {
           title: "test notes title",
-          content: "test notes content lirum gua",
+          content: "lore2515161",
           id: 12,
           createdAt: "test",
         },
@@ -90,13 +90,13 @@ export default function Notes() {
       items: [
         {
           title: "test notes title",
-          content: "test notes content lirum gua",
+          content: "lore3161261",
           id: 21,
           createdAt: "test",
         },
         {
           title: "test notes title",
-          content: "test notes content lirum gua",
+          content: "lore41612561",
           id: 22,
           createdAt: "test",
         },
@@ -108,13 +108,13 @@ export default function Notes() {
       items: [
         {
           title: "test notes title",
-          content: "test notes content lirum gua",
+          content: "lore512612",
           id: 31,
           createdAt: "test",
         },
         {
           title: "test notes title",
-          content: "test notes content lirum gua",
+          content: "lore612712",
           id: 32,
           createdAt: "test",
         },
@@ -126,13 +126,13 @@ export default function Notes() {
       items: [
         {
           title: "test notes title",
-          content: "test notes content lirum gua",
+          content: "712681",
           id: 41,
           createdAt: "test",
         },
         {
           title: "test notes title",
-          content: "test notes content lirum gua",
+          content: "712517",
           id: 42,
           createdAt: "test",
         },
@@ -144,13 +144,13 @@ export default function Notes() {
       items: [
         {
           title: "test notes title",
-          content: "test notes content lirum gua",
+          content: "81251612",
           id: 51,
           createdAt: "test",
         },
         {
           title: "test notes title",
-          content: "test notes content lirum gua",
+          content: "66521612",
           id: 52,
           createdAt: "test",
         },
@@ -162,13 +162,13 @@ export default function Notes() {
       items: [
         {
           title: "test notes title",
-          content: "test notes content lirum gua",
+          content: "241612",
           id: 61,
           createdAt: "test",
         },
         {
           title: "test notes title",
-          content: "test notes content lirum gua",
+          content: "1261712",
           id: 62,
           createdAt: "test",
         },
@@ -180,13 +180,13 @@ export default function Notes() {
       items: [
         {
           title: "test notes title",
-          content: "test notes content lirum gua",
+          content: "8675432",
           id: 71,
           createdAt: "test",
         },
         {
           title: "test notes title",
-          content: "test notes content lirum gua",
+          content: "sdghasd",
           id: 72,
           createdAt: "test",
         },
@@ -494,10 +494,9 @@ export default function Notes() {
                                     <div className="font-bold pb-3">
                                       {subItem.title}
                                     </div>
-                                    <p>{`${subItem.content.substring(
-                                      0,
-                                      30
-                                    )}...`}</p>
+                                    <p>{`${subItem.content
+                                      .replace(/(<([^>]+)>)/gi, "")
+                                      .substring(0, 30)}...`}</p>
                                     <div className="text-xs pt-3">
                                       Created at {subItem.createdAt}
                                     </div>
@@ -552,7 +551,7 @@ export default function Notes() {
           </SidebarMenu>
         </SidebarGroup>
       </ScrollArea>
-      <Outlet context={notes} />
+      <Outlet context={[notes]} />
     </>
   );
 }

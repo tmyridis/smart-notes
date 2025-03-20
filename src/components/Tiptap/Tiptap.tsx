@@ -14,6 +14,8 @@ import FileHandler from "@tiptap-pro/extension-file-handler";
 import Placeholder from "@tiptap/extension-placeholder";
 import ImageResize from "tiptap-extension-resize-image";
 import { Notes, SingleNote } from "@/types/types";
+import { useEffect } from "react";
+import { useLocation, useParams } from "react-router";
 
 // create a lowlight instance with all languages loaded
 const lowlight = createLowlight(all);
@@ -26,8 +28,8 @@ lowlight.register("js", js);
 lowlight.register("ts", ts);
 
 const Tiptap = ({ notes }: { notes: Notes[] }) => {
-  const content = notes[0].folder;
-  console.log(content);
+  const { id } = useParams();
+  const location = useLocation();
 
   const editor = useEditor({
     extensions: [
@@ -121,7 +123,6 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
         },
       }),
     ],
-    content: content,
     editorProps: {
       attributes: {
         class:
@@ -130,8 +131,73 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
     },
     onUpdate: ({ editor }) => {
       console.log(editor.getHTML());
+      updateNote(editor.getHTML());
     },
   });
+
+  const updateContent = () => {
+    if (!notes) {
+      editor?.commands.setContent("");
+      return "";
+    }
+
+    var folder = notes.find((obj: Notes) => {
+      return obj.items.some((note: SingleNote) => {
+        return note.id === Number(id);
+      });
+    });
+
+    var content = folder?.items.filter(
+      (note: SingleNote) => note.id === Number(id)
+    )[0];
+
+    if (content) {
+      editor?.commands.setContent(content.content);
+    } else {
+      editor?.commands.setContent("");
+    }
+  };
+
+  const updateNote = (newContent: string) => {
+    if (!notes) {
+      return "";
+    }
+
+    // get folder based on url id (note id)
+    // which folder contains the note with id === id
+    var folder = notes.find((obj: Notes) => {
+      return obj.items.some((note: SingleNote) => {
+        return note.id === Number(id);
+      });
+    });
+
+    if (folder) {
+      console.log(folder);
+
+      // get the note from the items of the folder
+      var note = folder?.items.filter(
+        (note: SingleNote) => note.id === Number(id)
+      )[0];
+
+      console.log(note);
+
+      // change the content
+      if (note) {
+        note.content = newContent;
+
+        // get index of the note inside the items array
+        //and update it
+        var ind = folder?.items.findIndex((obj) => obj.id === note?.id);
+        folder.items[ind] = note;
+
+        console.log(folder);
+      }
+    }
+  };
+
+  useEffect(() => {
+    updateContent();
+  }, [location]);
 
   return (
     <>
