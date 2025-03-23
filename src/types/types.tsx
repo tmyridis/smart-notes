@@ -1,5 +1,5 @@
 import { LucideIcon } from "lucide-react";
-
+import { ColumnId } from "@/components/Tasks/TasksBoard/KanbanBoard";
 export interface Notes {
   folder: string;
   id: number;
@@ -13,7 +13,7 @@ export interface SingleNote {
   createdAt: string;
 }
 
-export interface Tasks {
+export interface TasksFolder {
   folder: string;
   id: number;
   icon: string;
@@ -25,5 +25,5 @@ export interface SingleTask {
   description: string;
   id: number;
   createdAt: string;
-  status: string;
+  status: ColumnId;
 }
