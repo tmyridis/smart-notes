@@ -22,7 +22,7 @@ import {
   Minus,
   Image,
 } from "lucide-react";
-import { Toggle } from "../ui/toggle";
+import { Toggle } from "../../ui/toggle";
 
 import {
   DropdownMenu,
@@ -30,11 +30,11 @@ import {
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
-} from "../ui/dropdown-menu";
-import { Button } from "../ui/button";
-import { Separator } from "../ui/separator";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
+} from "../../ui/dropdown-menu";
+import { Button } from "../../ui/button";
+import { Separator } from "../../ui/separator";
+import { Input } from "../../ui/input";
+import { Label } from "../../ui/label";
 
 export default function Menubar({ editor }: { editor: Editor | null }) {
   if (!editor) {

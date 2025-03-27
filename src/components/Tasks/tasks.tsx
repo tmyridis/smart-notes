@@ -21,7 +21,7 @@ export default function Tasks() {
     (task: SingleTask, id: number) => void
   ] = useOutletContext();
   const { id } = useParams();
-
+  
   var tasksData = tasks.filter((obj) => obj.id === Number(id))[0].items;
 
   return (

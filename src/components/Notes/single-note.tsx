@@ -1,5 +1,5 @@
 import { useOutletContext } from "react-router";
-import Tiptap from "../Tiptap/Tiptap";
+import Tiptap from "./Tiptap/Tiptap";
 import { useParams } from "react-router";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router";

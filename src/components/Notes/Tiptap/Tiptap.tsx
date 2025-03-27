@@ -15,7 +15,7 @@ import Placeholder from "@tiptap/extension-placeholder";
 import ImageResize from "tiptap-extension-resize-image";
 import { Notes, SingleNote } from "@/types/types";
 import { useEffect } from "react";
-import { useLocation, useParams } from "react-router";
+import { redirect, useLocation, useNavigate, useParams } from "react-router";
 
 // create a lowlight instance with all languages loaded
 const lowlight = createLowlight(all);
@@ -196,8 +196,9 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
   };
 
   useEffect(() => {
+    console.log("t");
     updateContent();
-  }, [location]);
+  }, [location, notes]);
 
   return (
     <>

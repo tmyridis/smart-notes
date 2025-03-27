@@ -17,23 +17,12 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import {
   ContextMenu,
-  ContextMenuCheckboxItem,
   ContextMenuContent,
   ContextMenuItem,
-  ContextMenuLabel,
-  ContextMenuRadioGroup,
-  ContextMenuRadioItem,
-  ContextMenuSeparator,
-  ContextMenuShortcut,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from "@/components/ui/context-menu";
 
@@ -52,219 +41,33 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-import { NavLink, Outlet, redirect } from "react-router";
-import { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-  DialogTrigger,
-} from "@radix-ui/react-dialog";
-import { DialogFooter, DialogHeader } from "../ui/dialog";
-import { Button } from "../ui/button";
-import { ScrollArea } from "../ui/scroll-area";
-export default function Notes() {
-  const DUMMY_NOTES = [
-    {
-      folder: "test folder 1",
-      id: 1,
-      items: [
-        {
-          title: "test notes title",
-          content: "lore12151",
-          id: 11,
-          createdAt: "13/3/2025",
-        },
-        {
-          title: "test notes title",
-          content: "lore2515161",
-          id: 12,
-          createdAt: "test",
-        },
-      ],
-    },
-    {
-      folder: "test folder2",
-      id: 2,
-      items: [
-        {
-          title: "test notes title",
-          content: "lore3161261",
-          id: 21,
-          createdAt: "test",
-        },
-        {
-          title: "test notes title",
-          content: "lore41612561",
-          id: 22,
-          createdAt: "test",
-        },
-      ],
-    },
-    {
-      folder: "test folder2",
-      id: 3,
-      items: [
-        {
-          title: "test notes title",
-          content: "lore512612",
-          id: 31,
-          createdAt: "test",
-        },
-        {
-          title: "test notes title",
-          content: "lore612712",
-          id: 32,
-          createdAt: "test",
-        },
-      ],
-    },
-    {
-      folder: "test folder2",
-      id: 4,
-      items: [
-        {
-          title: "test notes title",
-          content: "712681",
-          id: 41,
-          createdAt: "test",
-        },
-        {
-          title: "test notes title",
-          content: "712517",
-          id: 42,
-          createdAt: "test",
-        },
-      ],
-    },
-    {
-      folder: "test folder2",
-      id: 5,
-      items: [
-        {
-          title: "test notes title",
-          content: "81251612",
-          id: 51,
-          createdAt: "test",
-        },
-        {
-          title: "test notes title",
-          content: "66521612",
-          id: 52,
-          createdAt: "test",
-        },
-      ],
-    },
-    {
-      folder: "test folder2",
-      id: 6,
-      items: [
-        {
-          title: "test notes title",
-          content: "241612",
-          id: 61,
-          createdAt: "test",
-        },
-        {
-          title: "test notes title",
-          content: "1261712",
-          id: 62,
-          createdAt: "test",
-        },
-      ],
-    },
-    {
-      folder: "test folder2",
-      id: 7,
-      items: [
-        {
-          title: "test notes title",
-          content: "8675432",
-          id: 71,
-          createdAt: "test",
-        },
-        {
-          title: "test notes title",
-          content: "sdghasd",
-          id: 72,
-          createdAt: "test",
-        },
-      ],
-    },
-  ];
+import { NavLink, Outlet } from "react-router";
+import { useEffect, useState } from "react";
 
-  const [notes, setNotes] = useState(DUMMY_NOTES);
+import { Button } from "../../ui/button";
+import { ScrollArea } from "../../ui/scroll-area";
+import { Notes } from "@/types/types";
+import { useNotes } from "../../../context/notesContext";
+export default function Notes() {
+  const {
+    notesData,
+    setNotesData,
+    status,
+    createFolder,
+    addNote,
+    renameFolder,
+    deleteNote,
+    deleteFolder,
+  } = useNotes();
+
+  useEffect(() => {
+    setNotes(notesData);
+  }, [notesData]);
+
+  const [notes, setNotes] = useState<Notes[]>(notesData);
   const [folderRename, setFolderRename] = useState("");
   const [noteToAdd, setNoteToAdd] = useState("");
   const [folderAdd, setFolderAdd] = useState("");
-
-  const deleteFolder = (id: number) => {
-    var tempNotes = notes;
-    tempNotes = tempNotes.filter((folder) => folder.id !== id);
-    console.log(tempNotes);
-    setNotes(tempNotes);
-  };
-
-  const renameFolder = (id: number, newName: string) => {
-    var tempNotes = notes;
-    var renamed = tempNotes.map((obj) => {
-      if (obj.id === id) {
-        return { ...obj, folder: newName };
-      }
-      return obj;
-    });
-
-    setNotes(renamed);
-  };
-
-  const addNote = (folderId: number, title: string) => {
-    var tempNotes = notes;
-    var newNote = {
-      title: title,
-      content: "",
-      createdAt: "13/3/2023",
-      id: 16126712,
-    };
-
-    tempNotes
-      .filter((folder) => folder.id === folderId)[0]
-      ["items"].push(newNote);
-
-    console.log(tempNotes);
-
-    setNoteToAdd("");
-  };
-
-  const deleteNote = (folderId: number, noteId: number) => {
-    var tempNotes = JSON.parse(JSON.stringify(notes));
-    console.log(notes);
-    var folderItems = tempNotes.filter(
-      (obj: { id: number }) => obj.id === folderId
-    )[0].items;
-    var noteIndex = folderItems.findIndex(
-      (obj: { id: number }) => obj.id === noteId
-    );
-    folderItems.splice(noteIndex, 1);
-
-    tempNotes.filter((obj: { id: number }) => obj.id === folderId)[0].items =
-      folderItems;
-    console.log(tempNotes);
-    setNotes(tempNotes);
-  };
-
-  const createFolder = (folderName: string) => {
-    var newFolder = {
-      folder: folderName,
-      id: 5178951,
-      items: [],
-    };
-
-    var tempNotes = notes;
-    tempNotes.push(newFolder);
-    setNotes(tempNotes);
-    setFolderAdd("");
-  };
 
   return (
     <>
@@ -308,6 +111,7 @@ export default function Notes() {
                       disabled={folderAdd === ""}
                       onClick={() => {
                         createFolder(folderAdd);
+                        setFolderAdd("");
                       }}
                     >
                       Create folder
@@ -325,9 +129,7 @@ export default function Notes() {
                     <ContextMenuTrigger>
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton tooltip={item.folder}>
-                          <div className="text-md font-semibold">
-                            {item.folder}
-                          </div>
+                          <div className="text-md font-bold">{item.folder}</div>
                           <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
@@ -377,6 +179,7 @@ export default function Notes() {
                                 disabled={noteToAdd === ""}
                                 onClick={() => {
                                   addNote(item.id, noteToAdd);
+                                  setNoteToAdd("");
                                 }}
                               >
                                 Add note
@@ -486,8 +289,8 @@ export default function Notes() {
                                 <div
                                   className={
                                     isActive
-                                      ? "bg-zinc-300 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-700 rounded-md px-5 py-2"
-                                      : "hover:bg-zinc-300 dark:hover:bg-zinc-700 rounded-md px-5 py-2"
+                                      ? "bg-zinc-300 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-700 rounded-md px-5 py-2 "
+                                      : "hover:bg-zinc-300 dark:hover:bg-zinc-700 rounded-md px-5 py-2 "
                                   }
                                 >
                                   <div className="grid">

@@ -4,17 +4,19 @@ import "./index.css";
 import App from "./App.tsx";
 import { ThemeProvider } from "@/components/theme-provider";
 import { BrowserRouter, Routes, Route } from "react-router";
-import Notes from "./components/NoteSidebar/noteSidebar.tsx";
-import TaskSidebar from "./components/Tasks/Sidebar/sidebar.tsx";
-import SingleNote from "./components/SingleNote/single-note.tsx";
+import Notes from "./components/Notes/NoteSidebar/noteSidebar.tsx";
+import TaskSidebar from "./components/Tasks/TasksSidebar/sidebar.tsx";
+import SingleNote from "./components/Notes/single-note.tsx";
 import Tasks from "./components/Tasks/tasks.tsx";
+import Home from "./components/Home/index.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<App />}>
+          <Route element={<App />}>
+            <Route path="/" element={<Home />} />
             <Route path="notes" element={<Notes />}>
               <Route path=":id" element={<SingleNote />} />
             </Route>

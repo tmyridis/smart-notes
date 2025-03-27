@@ -31,293 +31,35 @@ import {
 } from "@/components/ui/alert-dialog";
 
 import { NavLink, Outlet } from "react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "../../ui/button";
 import { ScrollArea } from "../../ui/scroll-area";
 import { EmojiPicker } from "@ferrucc-io/emoji-picker";
-import { SingleTask } from "@/types/types";
+import { useTasks } from "@/context/tasksContext";
+import { TasksFolder } from "@/types/types";
 
 export default function TaskSidebar() {
-  const DUMMY_TASKS = [
-    {
-      folder: "test folder 1",
-      id: 1,
-      icon: "💻",
-      items: [
-        {
-          id: 1,
-          status: "done",
-          task: "Project initiation and planning",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-        {
-          id: 2,
-          status: "done",
-          task: "Gather requirements from stakeholders",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-        {
-          id: 3,
-          status: "done",
-          task: "Create wireframes and mockups",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-        {
-          id: 4,
-          status: "in-progress",
-          task: "Develop homepage layout",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-        {
-          id: 5,
-          status: "in-progress",
-          task: "Design color scheme and typography",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-        {
-          id: 6,
-          status: "todo",
-          task: "Implement user authentication",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-        {
-          id: 7,
-          status: "todo",
-          task: "Build contact us page",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-        {
-          id: 8,
-          status: "todo",
-          task: "Create product catalog",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-        {
-          id: 9,
-          status: "todo",
-          task: "Develop about us page",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-        {
-          id: 10,
-          status: "todo",
-          task: "Optimize website for mobile devices",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-        {
-          id: 11,
-          status: "todo",
-          task: "Integrate payment gateway",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-        {
-          id: 12,
-          status: "todo",
-          task: "Perform testing and bug fixing",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-        {
-          id: 13,
-          status: "todo",
-          task: "Launch website and deploy to server",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-      ],
-    },
-    {
-      folder: "test folder 1",
-      id: 2,
-      icon: "💻",
-      items: [
-        {
-          id: 1,
-          status: "done",
-          task: "Project initiation and planning",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-        {
-          id: 2,
-          status: "done",
-          task: "Gather requirements from stakeholders",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-        {
-          id: 3,
-          status: "done",
-          task: "Create wireframes and mockups",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-        {
-          id: 4,
-          status: "in-progress",
-          task: "Develop homepage layout",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-        {
-          id: 5,
-          status: "in-progress",
-          task: "Design color scheme and typography",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-        {
-          id: 6,
-          status: "todo",
-          task: "Implement user authentication",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-        {
-          id: 7,
-          status: "todo",
-          task: "Build contact us page",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-        {
-          id: 8,
-          status: "todo",
-          task: "Create product catalog",
-          description: "description test",
-          createdAt: "13/3/2025",
-        },
-      ],
-    },
-  ];
+  const {
+    tasksData,
+    setTasksData,
+    status,
+    createFolder,
+    deleteFolder,
+    renameFolder,
+    createTask,
+    deleteTask,
+    editTask,
+  } = useTasks();
 
-  const [tasks, setTasks] = useState(DUMMY_TASKS);
+  const [tasks, setTasks] = useState<TasksFolder[]>(tasksData);
   const [folderRename, setFolderRename] = useState("");
   const [folderAdd, setFolderAdd] = useState("");
   const [emojiIcon, setEmojiIcon] = useState("");
 
-  const deleteTask = (task: SingleTask, id: number) => {
-    var tempTasks = JSON.parse(JSON.stringify(tasks));
-    var taskFolder = tempTasks.find((obj: { id: number }) => obj.id === id);
-
-    const taskIdx = taskFolder.items.findIndex(
-      (obj: SingleTask) => obj.id === task.id
-    );
-
-    taskFolder.items.splice(taskIdx, 1);
-    console.log(taskFolder);
-
-    var idx = tempTasks.map((e: { id: any }) => e.id).indexOf(id);
-    if (idx !== -1) {
-      tempTasks[idx] = taskFolder;
-    }
-    console.log(tempTasks);
-    setTasks(tempTasks);
-  };
-
-  const editTask = (
-    taskName: string,
-    taskDescription: string,
-    task: SingleTask,
-    id: number
-  ) => {
-    if (taskName !== "" && taskDescription !== "") {
-      var editedTask = task;
-      editedTask["task"] = taskName;
-      editedTask["description"] = taskDescription;
-
-      var tempTasks = JSON.parse(JSON.stringify(tasks));
-      var taskFolder = tempTasks.find((obj: { id: number }) => obj.id === id);
-      taskFolder.items.map((item: SingleTask) => {
-        if (item.id === editedTask.id) {
-          item = editedTask;
-        }
-      });
-      var idx = tempTasks.map((e: { id: any }) => e.id).indexOf(id);
-      if (idx !== -1) {
-        tempTasks[idx] = taskFolder;
-      }
-      console.log(tempTasks);
-      setTasks(tempTasks);
-    }
-  };
-
-  const createTask = (
-    columnId: any,
-    taskName: string,
-    taskDescription: string,
-    id: number
-  ) => {
-    if (taskName !== "" && taskDescription !== "") {
-      var newTask: SingleTask = {
-        id: 5151,
-        task: taskName,
-        description: taskDescription,
-        createdAt: "13/3/2025",
-        status: columnId,
-      };
-      console.log(newTask);
-      console.log(id);
-      var tempTasks = JSON.parse(JSON.stringify(tasks));
-      var taskFolder = tempTasks.find((obj: { id: number }) => obj.id === id);
-      taskFolder.items.push(newTask);
-      console.log(taskFolder);
-      var idx = tempTasks.map((e: { id: any }) => e.id).indexOf(id);
-      if (idx !== -1) {
-        tempTasks[idx] = taskFolder;
-      }
-      console.log(tempTasks);
-      setTasks(tempTasks);
-    }
-    console.log(tasks);
-  };
-
-  const deleteFolder = (id: number) => {
-    var tempNotes = tasks;
-    tempNotes = tempNotes.filter((folder) => folder.id !== id);
-    console.log(tempNotes);
-    setTasks(tempNotes);
-  };
-
-  const renameFolder = (id: number, newName: string) => {
-    var tempNotes = tasks;
-    var renamed = tempNotes.map((obj) => {
-      if (obj.id === id) {
-        return { ...obj, folder: newName };
-      }
-      return obj;
-    });
-
-    setTasks(renamed);
-  };
-
-  const createFolder = (folderName: string, emoji: string) => {
-    var newFolder = {
-      folder: folderName,
-      id: 5178951,
-      icon: emoji,
-      items: [],
-    };
-
-    var tempNotes = tasks;
-    tempNotes.push(newFolder);
-    setTasks(tempNotes);
-    setFolderAdd("");
-    setEmojiIcon("");
-  };
-  console.log(tasks);
+  useEffect(() => {
+    setTasks(tasksData);
+  }, [tasksData]);
 
   return (
     <>
@@ -388,6 +130,8 @@ export default function TaskSidebar() {
                       disabled={folderAdd === ""}
                       onClick={() => {
                         createFolder(folderAdd, emojiIcon);
+                        setEmojiIcon("");
+                        setFolderAdd("");
                       }}
                     >
                       Create folder
