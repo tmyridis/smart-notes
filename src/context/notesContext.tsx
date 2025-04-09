@@ -1,8 +1,8 @@
 import { db } from "@/firebaseConfig";
-import { Notes } from "@/types/types";
-import { collection, getDocs } from "firebase/firestore";
+import { Notes, SingleNote } from "@/types/types";
+import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { createContext, useState, useEffect, useContext } from "react";
-
+import { v4 as uuidv4 } from "uuid";
 // Create the context
 const NotesContext = createContext<Notes[]>([]);
 
@@ -12,22 +12,15 @@ export function NotesProvider({ children }: { children: any }) {
   const [status, setStatus] = useState("Saved");
   const notesRef = collection(db, "notesFolder");
 
-  // Simulated API Call (Can replace with real backend call)
-  // const saveNotes = async (updatedNotes) => {
-  //   setStatus("Saving...");
-  //   await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate delay
-  //   console.log("Notes saved:", updatedNotes);
-  //   setStatus("Saved");
-  // };
-
-  const deleteFolder = (id: number) => {
+  const deleteFolder = (id: Notes["id"]) => {
     var tempNotes = notesData;
     tempNotes = tempNotes.filter((folder) => folder.id !== id);
     console.log(tempNotes);
     setNotesData(tempNotes);
+    localStorage.setItem("notes", JSON.stringify(tempNotes));
   };
 
-  const renameFolder = (id: number, newName: string) => {
+  const renameFolder = (id: Notes["id"], newName: string) => {
     var tempNotes = notesData;
     var renamed = tempNotes.map((obj) => {
       if (obj.id === id) {
@@ -37,32 +30,35 @@ export function NotesProvider({ children }: { children: any }) {
     });
 
     setNotesData(renamed);
+    localStorage.setItem("notes", JSON.stringify(renamed));
   };
 
-  const deleteNote = (folderId: number, noteId: number) => {
+  const deleteNote = (folderId: Notes["id"], noteId: SingleNote["id"]) => {
     var tempNotes = JSON.parse(JSON.stringify(notesData));
     console.log(notesData);
     var folderItems = tempNotes.filter(
-      (obj: { id: number }) => obj.id === folderId
+      (obj: { id: Notes["id"] }) => obj.id === folderId
     )[0].items;
     var noteIndex = folderItems.findIndex(
-      (obj: { id: number }) => obj.id === noteId
+      (obj: { id: SingleNote["id"] }) => obj.id === noteId
     );
     folderItems.splice(noteIndex, 1);
 
-    tempNotes.filter((obj: { id: number }) => obj.id === folderId)[0].items =
-      folderItems;
+    tempNotes.filter(
+      (obj: { id: Notes["id"] }) => obj.id === folderId
+    )[0].items = folderItems;
     console.log(tempNotes);
     setNotesData(tempNotes);
+    localStorage.setItem("notes", JSON.stringify(tempNotes));
   };
 
-  const addNote = (folderId: number, title: string) => {
+  const addNote = (folderId: Notes["id"], title: string) => {
     var tempNotes = notesData;
     var newNote = {
       title: title,
       content: "",
       createdAt: "13/3/2023",
-      id: 16126712,
+      id: uuidv4(),
     };
 
     tempNotes
@@ -70,42 +66,43 @@ export function NotesProvider({ children }: { children: any }) {
       ["items"].push(newNote);
 
     console.log(tempNotes);
-
-    // setNoteToAdd("");
+    setNotesData(tempNotes);
+    localStorage.setItem("notes", JSON.stringify(tempNotes));
   };
 
-  const createFolder = (folderName: string) => {
+  const createFolder = async (folderName: string) => {
     var newFolder = {
       folder: folderName,
-      id: 5178951,
+      id: uuidv4(),
       items: [],
     };
 
     var tempNotes = notesData;
     tempNotes.push(newFolder);
     setNotesData(tempNotes);
-    // setFolderAdd("");
+    localStorage.setItem("notes", JSON.stringify(tempNotes));
+
+    await setDoc(doc(db, "notesFolder", newFolder.id), newFolder);
   };
 
   useEffect(() => {
     const getNotes = async () => {
-      const querySnapshot = await getDocs(notesRef);
-      const notesArray = querySnapshot.docs.map((doc) => ({
-        id: Number(doc.id),
-        ...doc.data(),
-      })) as Notes[];
-      console.log(notesArray);
-      setNotesData(notesArray);
+      const localNotes = JSON.parse(localStorage.getItem("notes") || "[]");
+      if (localNotes.length > 0) {
+        setNotesData(localNotes);
+      } else {
+        const querySnapshot = await getDocs(notesRef);
+        const notesArray = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        })) as Notes[];
+        console.log(notesArray);
+        localStorage.setItem("notes", JSON.stringify(notesArray));
+        setNotesData(notesArray);
+      }
     };
     getNotes();
   }, []);
-
-  // Auto-save after changes with debounce
-  // useEffect(() => {
-  //   if (notes.length === 0) return;
-  //   const timer = setTimeout(() => saveNotes(notes), 5000);
-  //   return () => clearTimeout(timer);
-  // }, [notes]);
 
   return (
     <NotesContext.Provider

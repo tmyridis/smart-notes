@@ -14,8 +14,19 @@ import FileHandler from "@tiptap-pro/extension-file-handler";
 import Placeholder from "@tiptap/extension-placeholder";
 import ImageResize from "tiptap-extension-resize-image";
 import { Notes, SingleNote } from "@/types/types";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { redirect, useLocation, useNavigate, useParams } from "react-router";
+import { useDebounce } from "use-debounce";
+import { getDatabase, ref, child, push, update } from "firebase/database";
+import {
+  collection,
+  doc,
+  getDocs,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+import { db } from "@/firebaseConfig";
 
 // create a lowlight instance with all languages loaded
 const lowlight = createLowlight(all);
@@ -30,6 +41,7 @@ lowlight.register("ts", ts);
 const Tiptap = ({ notes }: { notes: Notes[] }) => {
   const { id } = useParams();
   const location = useLocation();
+  let navigate = useNavigate();
 
   const editor = useEditor({
     extensions: [
@@ -133,7 +145,31 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
       console.log(editor.getHTML());
       updateNote(editor.getHTML());
     },
+
+    onBlur: () => {
+      localStorage.setItem("notes", JSON.stringify(notes));
+    },
   });
+
+  const [debouncedEditor] = useDebounce(editor?.getHTML(), 2000);
+  const [debouncedEditorFirebase] = useDebounce(editor?.getHTML(), 10000);
+
+  useEffect(() => {
+    if (debouncedEditor) {
+      if (notes.length > 0) {
+        localStorage.setItem("notes", JSON.stringify(notes));
+      }
+    }
+  }, [debouncedEditor]);
+
+  useEffect(() => {
+    if (debouncedEditorFirebase) {
+      if (notes.length > 0) {
+        console.log("saving to firebase");
+        syncNotes();
+      }
+    }
+  }, [debouncedEditorFirebase]);
 
   const updateContent = () => {
     if (!notes) {
@@ -143,19 +179,45 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
 
     var folder = notes.find((obj: Notes) => {
       return obj.items.some((note: SingleNote) => {
-        return note.id === Number(id);
+        return note.id === id;
       });
     });
 
-    var content = folder?.items.filter(
-      (note: SingleNote) => note.id === Number(id)
-    )[0];
+    var content = folder?.items.filter((note: SingleNote) => note.id === id)[0];
 
     if (content) {
       editor?.commands.setContent(content.content);
     } else {
       editor?.commands.setContent("");
+      navigate("/notes");
     }
+  };
+
+  const syncNotes = async () => {
+    console.log("syncing");
+    // get folder based on url id (note id)
+    // which folder contains the note with id === id
+    var folder = notes.find((obj: Notes) => {
+      return obj.items.some((note: SingleNote) => {
+        return note.id === id;
+      });
+    });
+
+    if (folder) {
+      console.log(folder);
+
+      // get the note from the items of the folder
+      var note = folder?.items.filter((note: SingleNote) => note.id === id)[0];
+
+      console.log(note);
+    }
+
+    const notesRef = collection(db, "notesFolder");
+    const q = query(notesRef, where("id", "==", folder?.id));
+    const querySnapshot = await getDocs(q);
+    const testRef = doc(db, "notesFolder", querySnapshot.docs[0].id);
+    console.log(testRef);
+    await updateDoc(testRef, { items: folder?.items, ...folder });
   };
 
   const updateNote = (newContent: string) => {
@@ -167,7 +229,7 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
     // which folder contains the note with id === id
     var folder = notes.find((obj: Notes) => {
       return obj.items.some((note: SingleNote) => {
-        return note.id === Number(id);
+        return note.id === id;
       });
     });
 
@@ -175,9 +237,7 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
       console.log(folder);
 
       // get the note from the items of the folder
-      var note = folder?.items.filter(
-        (note: SingleNote) => note.id === Number(id)
-      )[0];
+      var note = folder?.items.filter((note: SingleNote) => note.id === id)[0];
 
       console.log(note);
 
@@ -196,9 +256,9 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
   };
 
   useEffect(() => {
-    console.log("t");
+    console.log("update content");
     updateContent();
-  }, [location, notes]);
+  }, [location]);
 
   return (
     <>

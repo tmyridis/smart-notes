@@ -10,28 +10,37 @@ export default function Tasks() {
       columnId: any,
       taskName: string,
       taskDescription: string,
-      id: number
+      id: TasksFolder["id"]
     ) => void,
     (
       taskName: string,
       taskDescription: string,
       task: SingleTask,
-      id: number
+      id: TasksFolder["id"]
     ) => void,
-    (task: SingleTask, id: number) => void
+    (task: SingleTask, id: TasksFolder["id"]) => void
   ] = useOutletContext();
   const { id } = useParams();
-  
-  var tasksData = tasks.filter((obj) => obj.id === Number(id))[0].items;
+
+  var tasksData: SingleTask[] = [];
+
+  if (tasks.length > 0) {
+    var tempData = tasks.filter((obj) => obj.id === id);
+    if (tempData.length > 0) {
+      tasksData = tempData[0].items;
+    }
+  }
 
   return (
-    <div>
-      <KanbanBoard
-        tasksData={tasksData}
-        createTask={createTask}
-        editTask={editTask}
-        deleteTask={deleteTask}
-      />
-    </div>
+    <>
+      <div>
+        <KanbanBoard
+          tasksDatatest={tasksData}
+          createTask={createTask}
+          editTask={editTask}
+          deleteTask={deleteTask}
+        />
+      </div>
+    </>
   );
 }

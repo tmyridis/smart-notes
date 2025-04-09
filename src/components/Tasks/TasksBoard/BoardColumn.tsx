@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader } from "../../ui/card";
 import { Button } from "../../ui/button";
 import { CirclePlus, GripVertical } from "lucide-react";
 import { ScrollArea, ScrollBar } from "../../ui/scroll-area";
-import { SingleTask } from "@/types/types";
+import { SingleTask, TasksFolder } from "@/types/types";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,15 +47,15 @@ interface BoardColumnProps {
     columnId: any,
     taskName: string,
     taskDescription: string,
-    id: number
+    id: TasksFolder["id"]
   ) => void;
   editTask: (
     taskName: string,
     taskDescription: string,
     task: SingleTask,
-    id: number
+    id: TasksFolder["id"]
   ) => void;
-  deleteTask: (task: SingleTask, id: number) => void;
+  deleteTask: (task: SingleTask, id: TasksFolder["id"]) => void;
 }
 
 export function BoardColumn({
@@ -71,13 +71,11 @@ export function BoardColumn({
     return tasks.map((task) => task.id);
   }, [tasks]);
 
-  console.log(tasksIds);
-
   const [taskNameToAdd, setTaskNameToAdd] = useState("");
   const [taskDescToAdd, setTaskDescToAdd] = useState("");
 
   const createTask2 = (columnId: UniqueIdentifier) => {
-    createTask(columnId, taskNameToAdd, taskDescToAdd, Number(id));
+    createTask(columnId, taskNameToAdd, taskDescToAdd, id);
     setTaskNameToAdd("");
     setTaskDescToAdd("");
   };
@@ -202,7 +200,12 @@ export function BoardColumn({
         <CardContent className="flex flex-grow flex-col gap-2 p-2">
           <SortableContext items={tasksIds}>
             {tasks.map((task) => (
-              <TaskCard key={task.id} task={task} editTask={editTask} deleteTask={deleteTask} />
+              <TaskCard
+                key={task.id}
+                task={task}
+                editTask={editTask}
+                deleteTask={deleteTask}
+              />
             ))}
           </SortableContext>
         </CardContent>

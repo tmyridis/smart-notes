@@ -16,134 +16,7 @@ import { SingleNote } from "@/types/types";
 export default function Home() {
   const { notesData } = useNotes();
   console.log(notesData);
-  const DUMMY_NOTES = [
-    {
-      folder: "test folder 1",
-      id: 1,
-      items: [
-        {
-          title: "test notes title",
-          content: "lore12151",
-          id: 11,
-          createdAt: "13/3/2025",
-        },
-        {
-          title: "test notes title",
-          content: "lore2515161",
-          id: 12,
-          createdAt: "test",
-        },
-      ],
-    },
-    {
-      folder: "test folder2",
-      id: 2,
-      items: [
-        {
-          title: "test notes title",
-          content: "lore3161261",
-          id: 21,
-          createdAt: "test",
-        },
-        {
-          title: "test notes title",
-          content: "lore41612561",
-          id: 22,
-          createdAt: "test",
-        },
-      ],
-    },
-    {
-      folder: "test folder2",
-      id: 3,
-      items: [
-        {
-          title: "test notes title",
-          content: "lore512612",
-          id: 31,
-          createdAt: "test",
-        },
-        {
-          title: "test notes title",
-          content: "lore612712",
-          id: 32,
-          createdAt: "test",
-        },
-      ],
-    },
-    {
-      folder: "test folder2",
-      id: 4,
-      items: [
-        {
-          title: "test notes title",
-          content: "712681",
-          id: 41,
-          createdAt: "test",
-        },
-        {
-          title: "test notes title",
-          content: "712517",
-          id: 42,
-          createdAt: "test",
-        },
-      ],
-    },
-    {
-      folder: "test folder2",
-      id: 5,
-      items: [
-        {
-          title: "test notes title",
-          content: "81251612",
-          id: 51,
-          createdAt: "test",
-        },
-        {
-          title: "test notes title",
-          content: "66521612",
-          id: 52,
-          createdAt: "test",
-        },
-      ],
-    },
-    {
-      folder: "test folder2",
-      id: 6,
-      items: [
-        {
-          title: "test notes title",
-          content: "241612",
-          id: 61,
-          createdAt: "test",
-        },
-        {
-          title: "test notes title",
-          content: "1261712",
-          id: 62,
-          createdAt: "test",
-        },
-      ],
-    },
-    {
-      folder: "test folder2",
-      id: 7,
-      items: [
-        {
-          title: "test notes title",
-          content: "8675432",
-          id: 71,
-          createdAt: "test",
-        },
-        {
-          title: "test notes title",
-          content: "sdghasd",
-          id: 72,
-          createdAt: "test",
-        },
-      ],
-    },
-  ];
+
   const [notesPressed, setNotesPressed] = useState("recent");
   return (
     <div className="w-full">
@@ -201,13 +74,17 @@ export default function Home() {
                   >
                     <div className="p-1">
                       <NavLink to={`notes/${item.id}`}>
-                        <Card className="rounded-sm">
+                        <Card className="rounded-sm h-96 relative">
                           <CardContent className="aspect-square">
                             <div className="text-xl font-semibold">
                               {item.title}
                             </div>
-                            <div className="text-sm pt-6">{item.content}</div>
-                            <div className="text-xs mt-30">
+                            <div className="text-sm break-words">
+                              {item.content
+                                .replace(/(<([^>]+)>)/gi, "")
+                                .substring(0, 120)}
+                            </div>
+                            <div className="absolute text-xs bottom-5 left-5">
                               {item.createdAt}
                             </div>
                           </CardContent>

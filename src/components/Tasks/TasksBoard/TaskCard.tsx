@@ -7,7 +7,7 @@ import { cva } from "class-variance-authority";
 import { GripVertical, Pencil, Trash2 } from "lucide-react";
 import { Badge } from "../../ui/badge";
 import { ColumnId } from "./KanbanBoard";
-import { SingleTask } from "@/types/types";
+import { SingleTask, TasksFolder } from "@/types/types";
 import {
   ContextMenu,
   ContextMenuContent,
@@ -44,9 +44,9 @@ interface TaskCardProps {
     taskName: string,
     taskDescription: string,
     task: SingleTask,
-    id: number
+    id: TasksFolder["id"]
   ) => void;
-  deleteTask: (task: SingleTask, id: number) => void;
+  deleteTask: (task: SingleTask, id: TasksFolder["id"]) => void;
 }
 
 export type TaskType = "Task";
@@ -185,7 +185,7 @@ export function TaskCard({
                 <Button
                   type="submit"
                   onClick={() => {
-                    editTask(editTaskName, editTaskDesc, task, Number(id));
+                    editTask(editTaskName, editTaskDesc, task, id);
                   }}
                 >
                   Save changes
@@ -223,7 +223,7 @@ export function TaskCard({
                 <Button
                   type="submit"
                   onClick={() => {
-                    deleteTask(task, Number(id));
+                    deleteTask(task, id);
                   }}
                 >
                   Delete task

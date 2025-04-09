@@ -21,8 +21,9 @@ import { type Task, TaskCard } from "./TaskCard";
 import type { Column } from "./BoardColumn";
 import { hasDraggableData } from "./utils";
 import { coordinateGetter } from "./multipleContainersKeyboardPreset";
-import { SingleTask } from "@/types/types";
+import { SingleTask, TasksFolder } from "@/types/types";
 import { useLocation } from "react-router";
+import { useTasks } from "@/context/tasksContext";
 
 const defaultCols = [
   {
@@ -42,36 +43,38 @@ const defaultCols = [
 export type ColumnId = (typeof defaultCols)[number]["id"];
 
 export function KanbanBoard({
-  tasksData,
+  tasksDatatest,
   createTask,
   editTask,
   deleteTask,
 }: {
-  tasksData: SingleTask[];
+  tasksDatatest: SingleTask[];
   createTask: (
     columnId: any,
     taskName: string,
     taskDescription: string,
-    id: number
+    id: TasksFolder["id"]
   ) => void;
   editTask: (
     taskName: string,
     taskDescription: string,
     task: SingleTask,
-    id: number
+    id: TasksFolder["id"]
   ) => void;
-  deleteTask: (task: SingleTask, id: number) => void;
+  deleteTask: (task: SingleTask, id: TasksFolder["id"]) => void;
 }) {
   const location = useLocation();
+  const { tasksData } = useTasks();
   const [columns, setColumns] = useState<Column[]>(defaultCols);
   const pickedUpTaskColumn = useRef<ColumnId | null>(null);
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
-  const [tasks, setTasks] = useState<SingleTask[]>(tasksData);
+  const [tasks, setTasks] = useState<SingleTask[]>(tasksDatatest);
 
   useEffect(() => {
-    setTasks(tasksData);
-  }, [location, tasksData]);
+    console.log(tasksData);
+    setTasks(tasksDatatest);
+  }, [location, tasksDatatest]);
 
   const [activeColumn, setActiveColumn] = useState<Column | null>(null);
 
@@ -267,8 +270,8 @@ export function KanbanBoard({
 
     const activeData = active.data.current;
 
+    localStorage.setItem("tasks", JSON.stringify(tasksData));
     if (activeId === overId) return;
-
     const isActiveAColumn = activeData?.type === "Column";
     if (!isActiveAColumn) return;
 

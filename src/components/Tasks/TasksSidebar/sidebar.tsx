@@ -58,6 +58,7 @@ export default function TaskSidebar() {
   const [emojiIcon, setEmojiIcon] = useState("");
 
   useEffect(() => {
+    console.log(tasksData);
     setTasks(tasksData);
   }, [tasksData]);
 
@@ -142,123 +143,125 @@ export default function TaskSidebar() {
             </AlertDialog>
           </SidebarGroupLabel>
           <SidebarMenu>
-            {tasks.map((item) => (
-              <SidebarMenuItem key={item.id}>
-                <ContextMenu>
-                  <ContextMenuTrigger>
-                    <NavLink to={item.id.toString()} key={item.id}>
-                      {({ isActive }) => (
-                        <SidebarMenuButton
-                          tooltip={item.folder}
-                          className={
-                            isActive
-                              ? "bg-zinc-300 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-700 rounded-md px-5 py-2 cursor-pointer"
-                              : "hover:bg-zinc-300 dark:hover:bg-zinc-700 rounded-md px-5 py-2 cursor-pointer"
-                          }
-                        >
-                          <div className="flex justify-between w-full px-2">
-                            <div className="flex gap-x-2">
-                              <div>{item.icon}</div>
-                              <div className="text-md font-semibold">
-                                {item.folder}
+            {tasks &&
+              tasks.map((item) => (
+                <SidebarMenuItem key={item.id}>
+                  <ContextMenu>
+                    <ContextMenuTrigger>
+                      <NavLink to={item.id.toString()} key={item.id}>
+                        {({ isActive }) => (
+                          <SidebarMenuButton
+                            tooltip={item.folder}
+                            className={
+                              isActive
+                                ? "bg-zinc-300 dark:bg-zinc-700 hover:bg-zinc-300 dark:hover:bg-zinc-700 rounded-md px-5 py-2 cursor-pointer"
+                                : "hover:bg-zinc-300 dark:hover:bg-zinc-700 rounded-md px-5 py-2 cursor-pointer"
+                            }
+                          >
+                            <div className="flex justify-between w-full px-2">
+                              <div className="flex gap-x-2">
+                                <div>{item.icon}</div>
+                                <div className="text-md font-semibold">
+                                  {item.folder}
+                                </div>
                               </div>
+                              <div>{item?.items?.length}</div>
                             </div>
-                            <div>{item.items.length}</div>
-                          </div>
-                        </SidebarMenuButton>
-                      )}
-                    </NavLink>
-                  </ContextMenuTrigger>
-                  <ContextMenuContent className="w-64">
-                    <AlertDialog>
-                      <AlertDialogTrigger className="w-full">
-                        <ContextMenuItem
-                          inset
-                          onSelect={(e) => {
-                            e.preventDefault();
-                            setFolderRename(item.folder);
-                          }}
-                        >
-                          <Pencil className="text-muted-foreground" />
-                          <span>Rename folder</span>
-                        </ContextMenuItem>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent className="sm:max-w-[425px]">
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Rename folder</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Rename your folder here. Click save when you're
-                            done.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <div className="grid gap-4 py-4">
-                          <div className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="folder" className="text-right">
-                              Folder name
-                            </Label>
-                            <Input
-                              id="folder"
-                              value={folderRename}
-                              onChange={(e) => {
-                                setFolderRename(e.target.value);
-                              }}
-                              className="col-span-3"
-                            />
-                          </div>
-                        </div>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction>
-                            <Button
-                              type="submit"
-                              disabled={folderRename === ""}
-                              onClick={() => {
-                                renameFolder(item.id, folderRename);
-                              }}
-                            >
-                              Save changes
-                            </Button>
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                    <Separator className="bg-zinc-600 mt-1" />
-                    <AlertDialog>
-                      <AlertDialogTrigger className="w-full">
-                        <ContextMenuItem
-                          inset
-                          onSelect={(e) => e.preventDefault()}
-                        >
-                          <Trash2 className="text-muted-foreground" />
-                          <span>Delete folder</span>
-                        </ContextMenuItem>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>
-                            Do you wish to delete folder named: {item.folder}
-                          </AlertDialogTitle>
-                          <AlertDialogDescription>
-                            This action cannot be undone. This will permanently
-                            delete all tasks from folder: {item.folder}.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => {
-                              deleteFolder(item.id);
+                          </SidebarMenuButton>
+                        )}
+                      </NavLink>
+                    </ContextMenuTrigger>
+                    <ContextMenuContent className="w-64">
+                      <AlertDialog>
+                        <AlertDialogTrigger className="w-full">
+                          <ContextMenuItem
+                            inset
+                            onSelect={(e) => {
+                              e.preventDefault();
+                              setFolderRename(item.folder);
                             }}
                           >
-                            Delete folder
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </ContextMenuContent>
-                </ContextMenu>
-              </SidebarMenuItem>
-            ))}
+                            <Pencil className="text-muted-foreground" />
+                            <span>Rename folder</span>
+                          </ContextMenuItem>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="sm:max-w-[425px]">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Rename folder</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Rename your folder here. Click save when you're
+                              done.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="folder" className="text-right">
+                                Folder name
+                              </Label>
+                              <Input
+                                id="folder"
+                                value={folderRename}
+                                onChange={(e) => {
+                                  setFolderRename(e.target.value);
+                                }}
+                                className="col-span-3"
+                              />
+                            </div>
+                          </div>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction>
+                              <Button
+                                type="submit"
+                                disabled={folderRename === ""}
+                                onClick={() => {
+                                  renameFolder(item.id, folderRename);
+                                }}
+                              >
+                                Save changes
+                              </Button>
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                      <Separator className="bg-zinc-600 mt-1" />
+                      <AlertDialog>
+                        <AlertDialogTrigger className="w-full">
+                          <ContextMenuItem
+                            inset
+                            onSelect={(e) => e.preventDefault()}
+                          >
+                            <Trash2 className="text-muted-foreground" />
+                            <span>Delete folder</span>
+                          </ContextMenuItem>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Do you wish to delete folder named: {item.folder}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone. This will
+                              permanently delete all tasks from folder:{" "}
+                              {item.folder}.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => {
+                                deleteFolder(item.id);
+                              }}
+                            >
+                              Delete folder
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </ContextMenuContent>
+                  </ContextMenu>
+                </SidebarMenuItem>
+              ))}
           </SidebarMenu>
         </SidebarGroup>
       </ScrollArea>
