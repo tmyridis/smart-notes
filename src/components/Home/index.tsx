@@ -11,7 +11,7 @@ import { Label } from "../ui/label";
 import { Toggle } from "@/components/ui/toggle";
 import { NavLink } from "react-router";
 import { useNotes } from "@/context/notesContext";
-import { SingleNote } from "@/types/types";
+import { Notes, SingleNote } from "@/types/types";
 
 export default function Home() {
   const { notesData } = useNotes();
@@ -33,7 +33,7 @@ export default function Home() {
             className="w-full max-w-7xl"
           >
             <div className="flex items-center justify-between">
-              <Label className="font-bold text-md">Notes</Label>
+              <div className="font-bold text-md">Notes</div>
               <div className="flex gap-x-5">
                 <Toggle
                   size="sm"
@@ -85,7 +85,13 @@ export default function Home() {
                                 .substring(0, 120)}
                             </div>
                             <div className="absolute text-xs bottom-5 left-5">
-                              {item.createdAt}
+                              {item.updatedAt
+                                ? new Date(
+                                    item.updatedAt.seconds * 1000
+                                  ).toLocaleString()
+                                : new Date(
+                                    item.createdAt.seconds * 1000
+                                  ).toDateString()}
                             </div>
                           </CardContent>
                         </Card>

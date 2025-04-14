@@ -3,8 +3,9 @@ import { Notes, SingleNote } from "@/types/types";
 import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
 import { createContext, useState, useEffect, useContext } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { Timestamp } from "firebase/firestore";
 // Create the context
-const NotesContext = createContext<Notes[]>([]);
+const NotesContext = createContext<any>([]);
 
 // Notes Provider Component
 export function NotesProvider({ children }: { children: any }) {
@@ -57,9 +58,11 @@ export function NotesProvider({ children }: { children: any }) {
     var newNote = {
       title: title,
       content: "",
-      createdAt: "13/3/2023",
+      createdAt: Timestamp.fromDate(new Date()),
       id: uuidv4(),
     };
+
+    console.log(Timestamp.fromDate(new Date()));
 
     tempNotes
       .filter((folder) => folder.id === folderId)[0]

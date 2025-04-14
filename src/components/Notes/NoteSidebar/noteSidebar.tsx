@@ -301,7 +301,16 @@ export default function Notes() {
                                       .replace(/(<([^>]+)>)/gi, "")
                                       .substring(0, 30)}...`}</p>
                                     <div className="text-xs pt-3">
-                                      Created at {subItem.createdAt}
+                                      {subItem.updatedAt
+                                        ? "Updated at "
+                                        : "Created at "}
+                                      {subItem.updatedAt
+                                        ? new Date(
+                                            subItem.updatedAt.seconds * 1000
+                                          ).toLocaleString()
+                                        : new Date(
+                                            subItem.createdAt.seconds * 1000
+                                          ).toDateString()}
                                     </div>
                                   </div>
                                 </div>

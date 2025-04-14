@@ -1,5 +1,6 @@
 import { LucideIcon } from "lucide-react";
 import { ColumnId } from "@/components/Tasks/TasksBoard/KanbanBoard";
+import { Timestamp } from "firebase/firestore";
 export interface Notes {
   folder: string;
   id: string;
@@ -10,7 +11,8 @@ export interface SingleNote {
   title: string;
   content: string;
   id: string;
-  createdAt: string;
+  createdAt: Timestamp;
+  updatedAt?: Timestamp;
 }
 
 export interface TasksFolder {

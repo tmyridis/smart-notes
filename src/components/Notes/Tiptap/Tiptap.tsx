@@ -23,6 +23,7 @@ import {
   doc,
   getDocs,
   query,
+  Timestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -153,6 +154,7 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
 
   const [debouncedEditor] = useDebounce(editor?.getHTML(), 2000);
   const [debouncedEditorFirebase] = useDebounce(editor?.getHTML(), 10000);
+  const [toUpdate, setToUpdate] = useState(false);
 
   useEffect(() => {
     if (debouncedEditor) {
@@ -164,9 +166,10 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
 
   useEffect(() => {
     if (debouncedEditorFirebase) {
-      if (notes.length > 0) {
+      if (notes.length > 0 && toUpdate) {
         console.log("saving to firebase");
         syncNotes();
+        setToUpdate(false);
       }
     }
   }, [debouncedEditorFirebase]);
@@ -208,7 +211,7 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
 
       // get the note from the items of the folder
       var note = folder?.items.filter((note: SingleNote) => note.id === id)[0];
-
+      note["updatedAt"] = Timestamp.fromDate(new Date());
       console.log(note);
     }
 
@@ -224,7 +227,7 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
     if (!notes) {
       return "";
     }
-
+    setToUpdate(true);
     // get folder based on url id (note id)
     // which folder contains the note with id === id
     var folder = notes.find((obj: Notes) => {
