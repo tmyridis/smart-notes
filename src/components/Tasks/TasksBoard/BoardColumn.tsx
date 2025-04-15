@@ -26,6 +26,26 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { ColumnId } from "./KanbanBoard";
 import { useParams } from "react-router";
+import * as React from "react";
+import { addDays, format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Timestamp } from "firebase/firestore";
 
 export interface Column {
   id: UniqueIdentifier;
@@ -47,11 +67,13 @@ interface BoardColumnProps {
     columnId: any,
     taskName: string,
     taskDescription: string,
+    dueDate: Timestamp,
     id: TasksFolder["id"]
   ) => void;
   editTask: (
     taskName: string,
     taskDescription: string,
+    taskDueDate: Timestamp,
     task: SingleTask,
     id: TasksFolder["id"]
   ) => void;
@@ -73,11 +95,19 @@ export function BoardColumn({
 
   const [taskNameToAdd, setTaskNameToAdd] = useState("");
   const [taskDescToAdd, setTaskDescToAdd] = useState("");
+  const [dueDate, setDueDate] = React.useState<Date>();
 
   const createTask2 = (columnId: UniqueIdentifier) => {
-    createTask(columnId, taskNameToAdd, taskDescToAdd, id);
+    createTask(
+      columnId,
+      taskNameToAdd,
+      taskDescToAdd,
+      Timestamp.fromDate(dueDate),
+      id
+    );
     setTaskNameToAdd("");
     setTaskDescToAdd("");
+    setDueDate(undefined);
   };
 
   const {
@@ -145,7 +175,13 @@ export function BoardColumn({
               <CirclePlus />
             </Button>
           </AlertDialogTrigger>
-          <AlertDialogContent>
+          <AlertDialogContent
+            onEscapeKeyDown={() => {
+              setTaskDescToAdd("");
+              setTaskNameToAdd("");
+              setDueDate(undefined);
+            }}
+          >
             <AlertDialogHeader>
               <AlertDialogTitle>Create new task</AlertDialogTitle>
               <AlertDialogDescription>
@@ -176,17 +212,76 @@ export function BoardColumn({
                   }}
                   className="col-span-3"
                 />
+                <Label htmlFor="dueDate" className="text-right">
+                  Due date
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-[340px] justify-start text-left font-normal",
+                        !dueDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon />
+                      {dueDate ? (
+                        format(dueDate, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="start"
+                    className="flex w-auto flex-col space-y-2 p-2"
+                  >
+                    <Select
+                      onValueChange={(value: any) =>
+                        setDueDate(addDays(new Date(), parseInt(value)))
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent position="popper">
+                        <SelectItem value="0">Today</SelectItem>
+                        <SelectItem value="1">Tomorrow</SelectItem>
+                        <SelectItem value="3">In 3 days</SelectItem>
+                        <SelectItem value="7">In a week</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <div className="rounded-md border">
+                      <Calendar
+                        mode="single"
+                        selected={dueDate}
+                        onSelect={setDueDate}
+                      />
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
             <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogCancel
+                onClick={() => {
+                  setTaskDescToAdd("");
+                  setTaskNameToAdd("");
+                  setDueDate(undefined);
+                }}
+              >
+                Cancel
+              </AlertDialogCancel>
               <AlertDialogAction asChild>
                 <Button
                   type="submit"
                   onClick={() => {
                     createTask2(column.id);
+                    console.log(Timestamp.fromDate(dueDate));
                   }}
-                  disabled={taskNameToAdd === "" || taskDescToAdd === ""}
+                  disabled={
+                    taskNameToAdd === "" || taskDescToAdd === "" || !dueDate
+                  }
                 >
                   Create task
                 </Button>

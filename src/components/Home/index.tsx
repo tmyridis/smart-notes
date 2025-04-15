@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Carousel,
@@ -17,97 +17,117 @@ export default function Home() {
   const { notesData } = useNotes();
   console.log(notesData);
 
+  const [presentedNotes, setPresentedNotes] = useState([]);
   const [notesPressed, setNotesPressed] = useState("recent");
+
+  useEffect(() => {
+    if (notesPressed === "recent") {
+      const top10RecentItems = notesData
+        .flatMap((folder: Notes) => folder.items)
+        .sort(
+          (a: SingleNote, b: SingleNote) =>
+            new Date(b.updatedAt.seconds * 1000).valueOf() -
+            new Date(a.updatedAt.seconds * 1000).valueOf()
+        )
+        .slice(0, 10);
+
+      console.log(top10RecentItems);
+      setPresentedNotes(top10RecentItems);
+    } else {
+      setPresentedNotes([]);
+    }
+  }, [notesPressed, notesData]);
+
   return (
     <div className="w-full">
       <div className="pl-10 pt-10">
         <div className="text-sm font-semibold">Start taking notes...</div>
         <div className="text-xl font-bold">tmyridis's Home</div>
       </div>
-      {notesData.length > 0 && (
-        <div className="flex justify-center w-full pt-10">
-          <Carousel
-            opts={{
-              align: "start",
-            }}
-            className="w-full max-w-7xl"
-          >
-            <div className="flex items-center justify-between">
-              <div className="font-bold text-md">Notes</div>
-              <div className="flex gap-x-5">
-                <Toggle
-                  size="sm"
-                  aria-label=""
-                  onPressedChange={(e) => {
-                    if (e) {
-                      setNotesPressed("recent");
-                    } else {
-                      setNotesPressed("");
-                    }
-                  }}
-                  pressed={notesPressed === "recent"}
-                >
-                  Recent
-                </Toggle>
-                <Toggle
-                  size="sm"
-                  aria-label=""
-                  onPressedChange={(e) => {
-                    if (e) {
-                      setNotesPressed("suggested");
-                    } else {
-                      setNotesPressed("");
-                    }
-                  }}
-                  pressed={notesPressed === "suggested"}
-                >
-                  Suggested
-                </Toggle>
-              </div>
+
+      <div className="flex justify-center w-full pt-10">
+        <Carousel
+          opts={{
+            align: "start",
+          }}
+          className="w-full max-w-7xl"
+        >
+          <div className="flex items-center justify-between">
+            <div className="font-bold text-md">Notes</div>
+            <div className="flex gap-x-5">
+              <Toggle
+                size="sm"
+                aria-label=""
+                onPressedChange={(e) => {
+                  if (e) {
+                    setNotesPressed("recent");
+                  } else {
+                    setNotesPressed("suggested");
+                  }
+                }}
+                pressed={notesPressed === "recent"}
+              >
+                Recent
+              </Toggle>
+              <Toggle
+                size="sm"
+                aria-label=""
+                onPressedChange={(e) => {
+                  if (e) {
+                    setNotesPressed("suggested");
+                  } else {
+                    setNotesPressed("recent");
+                  }
+                }}
+                pressed={notesPressed === "suggested"}
+              >
+                Suggested
+              </Toggle>
             </div>
-            <CarouselContent>
-              {notesData ? (
-                notesData[0].items.map((item: SingleNote) => (
-                  <CarouselItem
-                    key={item.id}
-                    className="md:basis-1/2 lg:basis-1/6"
-                  >
-                    <div className="p-1">
-                      <NavLink to={`notes/${item.id}`}>
-                        <Card className="rounded-sm h-96 relative">
-                          <CardContent className="aspect-square">
-                            <div className="text-xl font-semibold">
-                              {item.title}
-                            </div>
-                            <div className="text-sm break-words">
-                              {item.content
-                                .replace(/(<([^>]+)>)/gi, "")
-                                .substring(0, 120)}
-                            </div>
-                            <div className="absolute text-xs bottom-5 left-5">
-                              {item.updatedAt
-                                ? new Date(
-                                    item.updatedAt.seconds * 1000
-                                  ).toLocaleString()
-                                : new Date(
-                                    item.createdAt.seconds * 1000
-                                  ).toDateString()}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      </NavLink>
-                    </div>
-                  </CarouselItem>
-                ))
-              ) : (
-                <></>
-              )}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
-        </div>
-      )}
+          </div>
+          <CarouselContent>
+            {presentedNotes ? (
+              presentedNotes.map((item: SingleNote) => (
+                <CarouselItem
+                  key={item.id}
+                  className="md:basis-1/2 lg:basis-1/6"
+                >
+                  <div className="p-1">
+                    <NavLink to={`notes/${item.id}`}>
+                      <Card className="rounded-sm h-96 relative">
+                        <CardContent className="aspect-square">
+                          <div className="text-xl font-semibold">
+                            {item.title}
+                          </div>
+                          <div className="text-sm break-words">
+                            {item.content
+                              .replace(/(<([^>]+)>)/gi, "")
+                              .substring(0, 120)}
+                          </div>
+                          <div className="absolute text-xs bottom-5 left-5">
+                            {item.updatedAt
+                              ? new Date(
+                                  item.updatedAt.seconds * 1000
+                                ).toLocaleString()
+                              : new Date(
+                                  item.createdAt.seconds * 1000
+                                ).toDateString()}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </NavLink>
+                  </div>
+                </CarouselItem>
+              ))
+            ) : (
+              <></>
+            )}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
+      </div>
+
       <div>test</div>
     </div>
   );

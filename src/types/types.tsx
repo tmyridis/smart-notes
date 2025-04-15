@@ -26,6 +26,7 @@ export interface SingleTask {
   task: string;
   description: string;
   id: string;
-  createdAt: string;
+  createdAt: Timestamp;
   status: ColumnId;
+  dueTo: Timestamp;
 }

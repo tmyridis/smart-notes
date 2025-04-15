@@ -7,6 +7,7 @@ import {
   getDocs,
   query,
   setDoc,
+  Timestamp,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -32,7 +33,7 @@ const initialState = [
   },
 ];
 // Create the context
-const TasksContext = createContext<TasksFolder[]>([]);
+const TasksContext = createContext<any>([]);
 
 // Tasks Provider Component
 export function TasksProvider({ children }: { children: any }) {
@@ -97,6 +98,7 @@ export function TasksProvider({ children }: { children: any }) {
     columnId: any,
     taskName: string,
     taskDescription: string,
+    dueDate: Timestamp,
     id: TasksFolder["id"]
   ) => {
     if (taskName !== "" && taskDescription !== "") {
@@ -104,7 +106,8 @@ export function TasksProvider({ children }: { children: any }) {
         id: uuidv4(),
         task: taskName,
         description: taskDescription,
-        createdAt: "13/3/2025",
+        createdAt: Timestamp.fromDate(new Date()),
+        dueTo: dueDate,
         status: columnId,
       };
       console.log(newTask);
@@ -136,13 +139,15 @@ export function TasksProvider({ children }: { children: any }) {
   const editTask = async (
     taskName: string,
     taskDescription: string,
+    taskDueDate: Timestamp,
     task: SingleTask,
     id: TasksFolder["id"]
   ) => {
-    if (taskName !== "" && taskDescription !== "") {
+    if (taskName !== "" && taskDescription !== "" && taskDueDate) {
       var editedTask = task;
       editedTask["task"] = taskName;
       editedTask["description"] = taskDescription;
+      editedTask["dueTo"] = Timestamp.fromDate(taskDueDate);
 
       var tempTasks = JSON.parse(JSON.stringify(tasksData));
       var taskFolder = tempTasks.find(

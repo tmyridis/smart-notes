@@ -24,6 +24,7 @@ import { coordinateGetter } from "./multipleContainersKeyboardPreset";
 import { SingleTask, TasksFolder } from "@/types/types";
 import { useLocation } from "react-router";
 import { useTasks } from "@/context/tasksContext";
+import { Timestamp } from "firebase/firestore";
 
 const defaultCols = [
   {
@@ -53,6 +54,7 @@ export function KanbanBoard({
     columnId: any,
     taskName: string,
     taskDescription: string,
+    dueDate: Timestamp,
     id: TasksFolder["id"]
   ) => void;
   editTask: (

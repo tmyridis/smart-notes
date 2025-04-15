@@ -4,7 +4,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cva } from "class-variance-authority";
-import { GripVertical, Pencil, Trash2 } from "lucide-react";
+import { CalendarIcon, GripVertical, Pencil, Trash2 } from "lucide-react";
 import { Badge } from "../../ui/badge";
 import { ColumnId } from "./KanbanBoard";
 import { SingleTask, TasksFolder } from "@/types/types";
@@ -30,6 +30,23 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useParams } from "react-router";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Calendar } from "@/components/ui/calendar";
+import { addDays, format } from "date-fns";
+import React from "react";
+import { Timestamp } from "firebase/firestore";
 
 export interface Task {
   id: UniqueIdentifier;
@@ -43,6 +60,7 @@ interface TaskCardProps {
   editTask: (
     taskName: string,
     taskDescription: string,
+    taskDueDate: Timestamp,
     task: SingleTask,
     id: TasksFolder["id"]
   ) => void;
@@ -96,6 +114,7 @@ export function TaskCard({
 
   const [editTaskName, setEditTaskName] = useState("");
   const [editTaskDesc, setEditTaskDesc] = useState("");
+  const [editDueDate, setEditDueDate] = React.useState<Date>();
   const { id } = useParams();
   return (
     <ContextMenu>
@@ -117,7 +136,10 @@ export function TaskCard({
               <span className="sr-only">Move task</span>
               <GripVertical />
             </Button>
-            <div className="text-xs font-semibold">{task.createdAt}</div>
+            <div className="text-xs font-semibold">
+              {"Due to "}
+              {new Date(task.dueTo.seconds * 1000).toLocaleString()}
+            </div>
             <Badge variant={"outline"} className="ml-auto font-semibold">
               Task
             </Badge>
@@ -139,6 +161,7 @@ export function TaskCard({
                 e.preventDefault();
                 setEditTaskName(task.task);
                 setEditTaskDesc(task.description);
+                setEditDueDate(new Date(task.dueTo.seconds * 1000));
               }}
             >
               <Pencil className="text-muted-foreground" />
@@ -177,6 +200,54 @@ export function TaskCard({
                   }}
                   className="col-span-3"
                 />
+                <Label htmlFor="dueDate" className="text-right">
+                  Due date
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-[280px] justify-start text-left font-normal",
+                        !editDueDate && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon />
+                      {editDueDate ? (
+                        format(editDueDate, "PPP")
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="start"
+                    className="flex w-auto flex-col space-y-2 p-2"
+                  >
+                    <Select
+                      onValueChange={(value: any) =>
+                        setEditDueDate(addDays(new Date(), parseInt(value)))
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select" />
+                      </SelectTrigger>
+                      <SelectContent position="popper">
+                        <SelectItem value="0">Today</SelectItem>
+                        <SelectItem value="1">Tomorrow</SelectItem>
+                        <SelectItem value="3">In 3 days</SelectItem>
+                        <SelectItem value="7">In a week</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <div className="rounded-md border">
+                      <Calendar
+                        mode="single"
+                        selected={editDueDate}
+                        onSelect={setEditDueDate}
+                      />
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
             <AlertDialogFooter>
@@ -184,8 +255,11 @@ export function TaskCard({
               <AlertDialogAction asChild>
                 <Button
                   type="submit"
+                  disabled={
+                    !editDueDate || editTaskDesc === "" || editTaskName === ""
+                  }
                   onClick={() => {
-                    editTask(editTaskName, editTaskDesc, task, id);
+                    editTask(editTaskName, editTaskDesc, editDueDate, task, id);
                   }}
                 >
                   Save changes
