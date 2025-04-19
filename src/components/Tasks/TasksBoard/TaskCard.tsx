@@ -4,7 +4,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cva } from "class-variance-authority";
-import { CalendarIcon, GripVertical, Pencil, Trash2 } from "lucide-react";
+import { CalendarIcon, Flag, GripVertical, Pencil, Trash2 } from "lucide-react";
 import { Badge } from "../../ui/badge";
 import { ColumnId } from "./KanbanBoard";
 import { SingleTask, TasksFolder } from "@/types/types";
@@ -39,7 +39,9 @@ import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -62,6 +64,7 @@ interface TaskCardProps {
     taskDescription: string,
     taskDueDate: Timestamp,
     task: SingleTask,
+    priority: string,
     id: TasksFolder["id"]
   ) => void;
   deleteTask: (task: SingleTask, id: TasksFolder["id"]) => void;
@@ -115,6 +118,7 @@ export function TaskCard({
   const [editTaskName, setEditTaskName] = useState("");
   const [editTaskDesc, setEditTaskDesc] = useState("");
   const [editDueDate, setEditDueDate] = React.useState<Date>();
+  const [editPriority, setEditPriority] = useState<string>("low");
   const { id } = useParams();
   return (
     <ContextMenu>
@@ -140,8 +144,17 @@ export function TaskCard({
               {"Due to "}
               {new Date(task.dueTo.seconds * 1000).toLocaleString()}
             </div>
-            <Badge variant={"outline"} className="ml-auto font-semibold">
-              Task
+            <Badge variant={"outline"} className="ml-auto font-semibold w-20">
+              <Flag
+                color={`${
+                  task.priority === "high"
+                    ? "red"
+                    : task.priority === "medium"
+                    ? "cyan"
+                    : "yellow"
+                }`}
+              />
+              {task.priority}
             </Badge>
           </CardHeader>
           <CardContent className="px-3 pt-3 pb-6 text-left whitespace-pre-wrap">
@@ -162,6 +175,7 @@ export function TaskCard({
                 setEditTaskName(task.task);
                 setEditTaskDesc(task.description);
                 setEditDueDate(new Date(task.dueTo.seconds * 1000));
+                setEditPriority(task.priority);
               }}
             >
               <Pencil className="text-muted-foreground" />
@@ -200,6 +214,36 @@ export function TaskCard({
                   }}
                   className="col-span-3"
                 />
+                <Label htmlFor="priority" className="text-right">
+                  Priority
+                </Label>
+                <Select
+                  defaultValue={editPriority}
+                  onValueChange={(e) => {
+                    setEditPriority(e);
+                  }}
+                >
+                  <SelectTrigger className="col-span-3 w-full">
+                    <SelectValue placeholder="Select priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Priority</SelectLabel>
+                      <SelectItem value="low">
+                        <Flag color="yellow" />
+                        Low
+                      </SelectItem>
+                      <SelectItem value="medium">
+                        <Flag color="cyan" />
+                        Medium
+                      </SelectItem>
+                      <SelectItem value="high">
+                        <Flag color="red" />
+                        High
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
                 <Label htmlFor="dueDate" className="text-right">
                   Due date
                 </Label>
@@ -259,7 +303,14 @@ export function TaskCard({
                     !editDueDate || editTaskDesc === "" || editTaskName === ""
                   }
                   onClick={() => {
-                    editTask(editTaskName, editTaskDesc, editDueDate, task, id);
+                    editTask(
+                      editTaskName,
+                      editTaskDesc,
+                      editDueDate,
+                      task,
+                      editPriority,
+                      id
+                    );
                   }}
                 >
                   Save changes

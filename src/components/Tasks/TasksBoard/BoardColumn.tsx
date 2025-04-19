@@ -6,7 +6,7 @@ import { Task, TaskCard } from "./TaskCard";
 import { cva } from "class-variance-authority";
 import { Card, CardContent, CardHeader } from "../../ui/card";
 import { Button } from "../../ui/button";
-import { CirclePlus, GripVertical } from "lucide-react";
+import { CirclePlus, GripVertical, Flag } from "lucide-react";
 import { ScrollArea, ScrollBar } from "../../ui/scroll-area";
 import { SingleTask, TasksFolder } from "@/types/types";
 import {
@@ -41,7 +41,9 @@ import {
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
@@ -68,6 +70,7 @@ interface BoardColumnProps {
     taskName: string,
     taskDescription: string,
     dueDate: Timestamp,
+    priority: string,
     id: TasksFolder["id"]
   ) => void;
   editTask: (
@@ -75,6 +78,7 @@ interface BoardColumnProps {
     taskDescription: string,
     taskDueDate: Timestamp,
     task: SingleTask,
+    priority: string,
     id: TasksFolder["id"]
   ) => void;
   deleteTask: (task: SingleTask, id: TasksFolder["id"]) => void;
@@ -96,6 +100,7 @@ export function BoardColumn({
   const [taskNameToAdd, setTaskNameToAdd] = useState("");
   const [taskDescToAdd, setTaskDescToAdd] = useState("");
   const [dueDate, setDueDate] = React.useState<Date>();
+  const [priority, setPriority] = useState<string>("low");
 
   const createTask2 = (columnId: UniqueIdentifier) => {
     createTask(
@@ -103,10 +108,12 @@ export function BoardColumn({
       taskNameToAdd,
       taskDescToAdd,
       Timestamp.fromDate(dueDate),
+      priority,
       id
     );
     setTaskNameToAdd("");
     setTaskDescToAdd("");
+    setPriority("low");
     setDueDate(undefined);
   };
 
@@ -188,7 +195,7 @@ export function BoardColumn({
                 Add your title and description. Click create when you're done.
               </AlertDialogDescription>
             </AlertDialogHeader>
-            <div className="grid gap-4 py-4">
+            <div className="py-4">
               <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="task" className="text-right">
                   Task name
@@ -212,6 +219,36 @@ export function BoardColumn({
                   }}
                   className="col-span-3"
                 />
+                <Label htmlFor="priority" className="text-right">
+                  Priority
+                </Label>
+                <Select
+                  defaultValue="low"
+                  onValueChange={(e) => {
+                    setPriority(e);
+                  }}
+                >
+                  <SelectTrigger className="col-span-3 w-full">
+                    <SelectValue placeholder="Select priority" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Priority</SelectLabel>
+                      <SelectItem value="low">
+                        <Flag color="yellow" />
+                        Low
+                      </SelectItem>
+                      <SelectItem value="medium">
+                        <Flag color="cyan" />
+                        Medium
+                      </SelectItem>
+                      <SelectItem value="high">
+                        <Flag color="red" />
+                        High
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
                 <Label htmlFor="dueDate" className="text-right">
                   Due date
                 </Label>

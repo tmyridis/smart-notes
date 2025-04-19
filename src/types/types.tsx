@@ -29,4 +29,5 @@ export interface SingleTask {
   createdAt: Timestamp;
   status: ColumnId;
   dueTo: Timestamp;
+  priority: string;
 }

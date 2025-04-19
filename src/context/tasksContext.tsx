@@ -99,6 +99,7 @@ export function TasksProvider({ children }: { children: any }) {
     taskName: string,
     taskDescription: string,
     dueDate: Timestamp,
+    priority: string,
     id: TasksFolder["id"]
   ) => {
     if (taskName !== "" && taskDescription !== "") {
@@ -108,6 +109,7 @@ export function TasksProvider({ children }: { children: any }) {
         description: taskDescription,
         createdAt: Timestamp.fromDate(new Date()),
         dueTo: dueDate,
+        priority: priority,
         status: columnId,
       };
       console.log(newTask);
@@ -141,13 +143,16 @@ export function TasksProvider({ children }: { children: any }) {
     taskDescription: string,
     taskDueDate: Timestamp,
     task: SingleTask,
+    priority: string,
     id: TasksFolder["id"]
   ) => {
     if (taskName !== "" && taskDescription !== "" && taskDueDate) {
       var editedTask = task;
+      console.log(priority);
       editedTask["task"] = taskName;
       editedTask["description"] = taskDescription;
       editedTask["dueTo"] = Timestamp.fromDate(taskDueDate);
+      editedTask["priority"] = priority;
 
       var tempTasks = JSON.parse(JSON.stringify(tasksData));
       var taskFolder = tempTasks.find(
