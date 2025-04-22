@@ -235,15 +235,15 @@ export function BoardColumn({
                     <SelectGroup>
                       <SelectLabel>Priority</SelectLabel>
                       <SelectItem value="low">
-                        <Flag color="yellow" />
+                        <Flag strokeWidth={3} color="yellow" fill="yellow" />
                         Low
                       </SelectItem>
                       <SelectItem value="medium">
-                        <Flag color="cyan" />
+                        <Flag strokeWidth={3} color="orange" fill="orange" />
                         Medium
                       </SelectItem>
                       <SelectItem value="high">
-                        <Flag color="red" />
+                        <Flag strokeWidth={3} color="red" fill="red" />
                         High
                       </SelectItem>
                     </SelectGroup>

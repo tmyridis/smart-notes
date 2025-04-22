@@ -146,11 +146,19 @@ export function TaskCard({
             </div>
             <Badge variant={"outline"} className="ml-auto font-semibold w-20">
               <Flag
+                strokeWidth={3}
                 color={`${
                   task.priority === "high"
                     ? "red"
                     : task.priority === "medium"
-                    ? "cyan"
+                    ? "orange"
+                    : "yellow"
+                }`}
+                fill={`${
+                  task.priority === "high"
+                    ? "red"
+                    : task.priority === "medium"
+                    ? "orange"
                     : "yellow"
                 }`}
               />
@@ -230,15 +238,15 @@ export function TaskCard({
                     <SelectGroup>
                       <SelectLabel>Priority</SelectLabel>
                       <SelectItem value="low">
-                        <Flag color="yellow" />
+                        <Flag strokeWidth={3} color="yellow" fill="yellow" />
                         Low
                       </SelectItem>
                       <SelectItem value="medium">
-                        <Flag color="cyan" />
+                        <Flag strokeWidth={3} color="orange" fill="orange" />
                         Medium
                       </SelectItem>
                       <SelectItem value="high">
-                        <Flag color="red" />
+                        <Flag strokeWidth={3} color="red" fill="red" />
                         High
                       </SelectItem>
                     </SelectGroup>

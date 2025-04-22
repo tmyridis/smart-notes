@@ -4,6 +4,7 @@ import {
   Trash2,
   Pencil,
   CirclePlus,
+  Star,
 } from "lucide-react";
 import {
   Collapsible,
@@ -48,6 +49,7 @@ import { Button } from "../../ui/button";
 import { ScrollArea } from "../../ui/scroll-area";
 import { Notes } from "@/types/types";
 import { useNotes } from "../../../context/notesContext";
+import { Toggle } from "@/components/ui/toggle";
 export default function Notes() {
   const {
     notesData,
@@ -58,6 +60,7 @@ export default function Notes() {
     renameFolder,
     deleteNote,
     deleteFolder,
+    starNote,
   } = useNotes();
 
   useEffect(() => {
@@ -294,8 +297,19 @@ export default function Notes() {
                                   }
                                 >
                                   <div className="grid">
-                                    <div className="font-bold pb-3">
+                                    <div className="flex justify-between items-center font-bold pb-3">
                                       {subItem.title}
+                                      <Toggle
+                                        size="sm"
+                                        aria-label="starred"
+                                        className="hover:bg-transparent data-[state=on]:bg-transparent group"
+                                        onPressedChange={(star) => {
+                                          starNote(item.id, subItem.id, star);
+                                        }}
+                                        pressed={subItem?.starred}
+                                      >
+                                        <Star className="group-data-[state=on]:text-yellow-400 group-data-[state=on]:fill-yellow-400" />
+                                      </Toggle>
                                     </div>
                                     <p>{`${subItem.content
                                       .replace(/(<([^>]+)>)/gi, "")

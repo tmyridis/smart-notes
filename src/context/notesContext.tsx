@@ -60,6 +60,7 @@ export function NotesProvider({ children }: { children: any }) {
       content: "",
       createdAt: Timestamp.fromDate(new Date()),
       id: uuidv4(),
+      starred: false,
     };
 
     console.log(Timestamp.fromDate(new Date()));
@@ -86,6 +87,30 @@ export function NotesProvider({ children }: { children: any }) {
     localStorage.setItem("notes", JSON.stringify(tempNotes));
 
     await setDoc(doc(db, "notesFolder", newFolder.id), newFolder);
+  };
+
+  const starNote = async (
+    folderId: Notes["id"],
+    noteId: SingleNote["id"],
+    star: boolean
+  ) => {
+    var tempNotes = JSON.parse(JSON.stringify(notesData));
+    var folderItems = tempNotes.filter(
+      (obj: { id: Notes["id"] }) => obj.id === folderId
+    )[0].items;
+    console.log(folderItems);
+    var note = folderItems.find(
+      (obj: { id: SingleNote["id"] }) => obj.id === noteId
+    );
+    console.log(note);
+    note["starred"] = star;
+
+    tempNotes.filter(
+      (obj: { id: Notes["id"] }) => obj.id === folderId
+    )[0].items = folderItems;
+    console.log(tempNotes);
+    setNotesData(tempNotes);
+    localStorage.setItem("notes", JSON.stringify(tempNotes));
   };
 
   useEffect(() => {
@@ -118,6 +143,7 @@ export function NotesProvider({ children }: { children: any }) {
         renameFolder,
         deleteNote,
         deleteFolder,
+        starNote,
       }}
     >
       {children}

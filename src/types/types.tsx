@@ -13,6 +13,7 @@ export interface SingleNote {
   id: string;
   createdAt: Timestamp;
   updatedAt?: Timestamp;
+  starred?: boolean;
 }
 
 export interface TasksFolder {
@@ -28,6 +29,6 @@ export interface SingleTask {
   id: string;
   createdAt: Timestamp;
   status: ColumnId;
-  dueTo: Timestamp;
+  dueTo?: Timestamp;
   priority: string;
 }

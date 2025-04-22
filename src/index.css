@@ -136,6 +136,10 @@
     @apply text-lg font-bold;
   }
 
+  textarea {
+    resize: none;
+  }
+
   pre {
     background: var(--black);
     border-radius: 0.5rem;
