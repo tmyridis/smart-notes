@@ -9,22 +9,27 @@ import TaskSidebar from "./components/Tasks/TasksSidebar/sidebar.tsx";
 import SingleNote from "./components/Notes/single-note.tsx";
 import Tasks from "./components/Tasks/tasks.tsx";
 import Home from "./components/Home/index.tsx";
+import LandingPage from "./components/LandingPage/index.tsx";
+import { AuthProvider } from "./context/authContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <BrowserRouter>
-        <Routes>
-          <Route element={<App />}>
-            <Route path="/" element={<Home />} />
-            <Route path="notes" element={<Notes />}>
-              <Route path=":id" element={<SingleNote />} />
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route element={<App />}>
+              <Route path="home" element={<Home />} />
+              <Route path="notes" element={<Notes />}>
+                <Route path=":id" element={<SingleNote />} />
+              </Route>
+              <Route path="tasks" element={<TaskSidebar />}>
+                <Route path=":id" element={<Tasks />}></Route>
+              </Route>
             </Route>
-            <Route path="tasks" element={<TaskSidebar />}>
-              <Route path=":id" element={<Tasks />}></Route>
-            </Route>
-          </Route>
-        </Routes>
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </ThemeProvider>
   </StrictMode>

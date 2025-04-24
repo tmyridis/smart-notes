@@ -1,18 +1,16 @@
-import { db } from "@/firebaseConfig";
+import { db } from "@/firebase/firebaseConfig";
 import { SingleTask, TasksFolder } from "@/types/types";
+import { getAuth } from "firebase/auth";
 import {
   collection,
-  deleteDoc,
   doc,
-  getDocs,
-  query,
-  setDoc,
+  getDoc,
   Timestamp,
   updateDoc,
-  where,
 } from "firebase/firestore";
 import { createContext, useState, useEffect, useContext } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { useAuth } from "./authContext";
 const initialState = [
   {
     folder: "",
@@ -39,7 +37,13 @@ const TasksContext = createContext<any>([]);
 export function TasksProvider({ children }: { children: any }) {
   const [tasksData, setTasksData] = useState<TasksFolder[]>([]);
   const [status, setStatus] = useState("Saved");
-  const tasksRef = collection(db, "tasksFolder");
+  const { user } = useAuth();
+
+  const fetchTasks = async (uid: string) => {
+    const docRef = doc(db, "users", uid);
+    const docSnap = await getDoc(docRef);
+    return docSnap.data();
+  };
 
   const deleteFolder = async (id: TasksFolder["id"]) => {
     var tempTasks = tasksData;
@@ -47,14 +51,14 @@ export function TasksProvider({ children }: { children: any }) {
     console.log(tempTasks);
     setTasksData(tempTasks);
     localStorage.setItem("tasks", JSON.stringify(tempTasks));
-
-    const notesRef = collection(db, "tasksFolder");
-    const q = query(notesRef, where("id", "==", id));
-    const querySnapshot = await getDocs(q);
-    const testRef = doc(db, "tasksFolder", querySnapshot.docs[0].id);
-    console.log(testRef);
-
-    await deleteDoc(doc(db, "tasksFolder", testRef.id));
+    console.log(tempTasks);
+    if (user) {
+      const uid = user.uid;
+      console.log(uid);
+      const ref = doc(db, "users", uid);
+      console.log(ref);
+      await updateDoc(ref, { tasksFolder: tempTasks });
+    }
   };
 
   const renameFolder = async (id: TasksFolder["id"], newName: string) => {
@@ -73,9 +77,17 @@ export function TasksProvider({ children }: { children: any }) {
       return obj;
     });
     console.log(newFolder);
+    console.log(renamed);
     setTasksData(renamed);
     localStorage.setItem("tasks", JSON.stringify(renamed));
-    await setDoc(doc(db, "tasksFolder", newFolder.id), newFolder);
+
+    if (user) {
+      const uid = user.uid;
+      console.log(uid);
+      const ref = doc(db, "users", uid);
+      console.log(ref);
+      await updateDoc(ref, { tasksFolder: renamed });
+    }
   };
 
   const createFolder = async (folderName: string, emoji: string) => {
@@ -91,7 +103,13 @@ export function TasksProvider({ children }: { children: any }) {
     setTasksData(tempTasks);
     localStorage.setItem("tasks", JSON.stringify(tempTasks));
 
-    await setDoc(doc(db, "tasksFolder", newFolder.id), newFolder);
+    if (user) {
+      const uid = user.uid;
+      console.log(uid);
+      const ref = doc(db, "users", uid);
+      console.log(ref);
+      await updateDoc(ref, { tasksFolder: tempTasks });
+    }
   };
 
   const createTask = async (
@@ -128,12 +146,15 @@ export function TasksProvider({ children }: { children: any }) {
       console.log(tempTasks);
       setTasksData(tempTasks);
       localStorage.setItem("tasks", JSON.stringify(tempTasks));
-      const tasksRef = collection(db, "tasksFolder");
-      const q = query(tasksRef, where("id", "==", id));
-      const querySnapshot = await getDocs(q);
-      const testRef = doc(db, "tasksFolder", querySnapshot.docs[0].id);
-      console.log(testRef);
-      await updateDoc(testRef, { items: taskFolder?.items, ...taskFolder });
+      console.log(tempTasks);
+
+      if (user) {
+        const uid = user.uid;
+        console.log(uid);
+        const ref = doc(db, "users", uid);
+        console.log(ref);
+        await updateDoc(ref, { tasksFolder: tempTasks });
+      }
     }
     console.log(tasksData);
   };
@@ -171,12 +192,14 @@ export function TasksProvider({ children }: { children: any }) {
       console.log(tempTasks);
       setTasksData(tempTasks);
       localStorage.setItem("tasks", JSON.stringify(tempTasks));
-      const tasksRef = collection(db, "tasksFolder");
-      const q = query(tasksRef, where("id", "==", id));
-      const querySnapshot = await getDocs(q);
-      const testRef = doc(db, "tasksFolder", querySnapshot.docs[0].id);
-      console.log(testRef);
-      await updateDoc(testRef, { items: taskFolder?.items, ...taskFolder });
+
+      if (user) {
+        const uid = user.uid;
+        console.log(uid);
+        const ref = doc(db, "users", uid);
+        console.log(ref);
+        await updateDoc(ref, { tasksFolder: tempTasks });
+      }
     }
   };
 
@@ -200,32 +223,36 @@ export function TasksProvider({ children }: { children: any }) {
     console.log(tempTasks);
     setTasksData(tempTasks);
     localStorage.setItem("tasks", JSON.stringify(tempTasks));
-    const tasksRef = collection(db, "tasksFolder");
-    const q = query(tasksRef, where("id", "==", id));
-    const querySnapshot = await getDocs(q);
-    const testRef = doc(db, "tasksFolder", querySnapshot.docs[0].id);
-    console.log(testRef);
-    await updateDoc(testRef, { items: taskFolder?.items, ...taskFolder });
+
+    if (user) {
+      const uid = user.uid;
+      console.log(uid);
+      const ref = doc(db, "users", uid);
+      console.log(ref);
+      await updateDoc(ref, { tasksFolder: tempTasks });
+    }
   };
 
   useEffect(() => {
     const getTasks = async () => {
-      const localTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-      if (localTasks.length > 0) {
-        setTasksData(localTasks);
-      } else {
-        const querySnapshot = await getDocs(tasksRef);
-        const tasksArray = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as TasksFolder[];
-        console.log(tasksArray);
-        localStorage.setItem("tasks", JSON.stringify(tasksArray));
-        setTasksData(tasksArray);
+      if (user) {
+        console.log(user);
+        const localTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+        if (localTasks.length > 0) {
+          setTasksData(localTasks);
+        } else {
+          await fetchTasks(user.uid).then((result) => {
+            console.log(result);
+            if (result) {
+              localStorage.setItem("tasks", JSON.stringify(result.tasksFolder));
+              setTasksData(result.tasksFolder);
+            }
+          });
+        }
       }
     };
     getTasks();
-  }, []);
+  }, [user]);
 
   return (
     <TasksContext.Provider

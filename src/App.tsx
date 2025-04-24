@@ -18,6 +18,7 @@ import { Outlet } from "react-router";
 import { ModeToggle } from "./components/mode-toggle";
 import { NotesProvider } from "./context/notesContext";
 import { TasksProvider } from "./context/tasksContext";
+import { AuthProvider } from "./context/authContext";
 function App() {
   return (
     <>

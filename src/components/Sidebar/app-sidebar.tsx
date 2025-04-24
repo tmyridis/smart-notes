@@ -1,22 +1,17 @@
 import * as React from "react";
 import {
   AudioWaveform,
-  BookOpen,
-  Bot,
   Command,
   Frame,
   GalleryVerticalEnd,
   Map,
   PieChart,
-  Settings2,
-  SquareTerminal,
   CircleCheck,
   House,
   ScrollText,
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
-import { NavProjects } from "./nav-projects";
 import { NavUser } from "./nav-user";
 import { TeamSwitcher } from "./team-switcher";
 import {
@@ -25,10 +20,8 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-  SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { useNotes } from "../../context/notesContext";
-import { Notes } from "@/types/types";
+import { useAuth } from "@/context/authContext";
 
 // This is sample data.
 const data = {
@@ -57,7 +50,7 @@ const data = {
   navMain: [
     {
       title: "Home",
-      url: "/",
+      url: "/home",
       icon: House,
       isActive: true,
     },
@@ -92,18 +85,25 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { user } = useAuth();
   return (
-    <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
-      </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} />
-      </SidebarContent>
-      <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter>
-      <SidebarRail />
-    </Sidebar>
+    <>
+      {user !== undefined ? (
+        <Sidebar collapsible="icon" {...props}>
+          <SidebarHeader>
+            <TeamSwitcher teams={data.teams} />
+          </SidebarHeader>
+          <SidebarContent>
+            <NavMain items={data.navMain} />
+          </SidebarContent>
+          <SidebarFooter>
+            <NavUser user={user} />
+          </SidebarFooter>
+          <SidebarRail />
+        </Sidebar>
+      ) : (
+        <></>
+      )}
+    </>
   );
 }

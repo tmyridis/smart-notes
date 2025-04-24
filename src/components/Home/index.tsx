@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Carousel,
@@ -8,22 +8,22 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Toggle } from "@/components/ui/toggle";
-import { Link, NavLink } from "react-router";
+import { Link } from "react-router";
 import { useNotes } from "@/context/notesContext";
 import { Notes, SingleNote, SingleTask, TasksFolder } from "@/types/types";
 import { useTasks } from "@/context/tasksContext";
 import { Flag, Star } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/context/authContext";
 
 export default function Home() {
   const { notesData } = useNotes();
   const { tasksData } = useTasks();
-
   const [presentedNotes, setPresentedNotes] = useState([]);
   const [notesPressed, setNotesPressed] = useState("recent");
   const [recentTasks, setRecentTasks] = useState([]);
   const [scratchPad, setScratchpad] = useState<string>("");
-
+  const { user } = useAuth();
   useEffect(() => {
     console.log(tasksData);
     const top5RecentTasks = tasksData
@@ -74,7 +74,7 @@ export default function Home() {
     <div className="w-full">
       <div className="pl-10 pt-10">
         <div className="text-sm font-semibold">Start taking notes...</div>
-        <div className="text-xl font-bold">tmyridis's Home</div>
+        <div className="text-xl font-bold">{user?.displayName}'s Home</div>
       </div>
 
       <div className="flex justify-center w-full pt-10">
@@ -129,7 +129,7 @@ export default function Home() {
                   className="md:basis-1/2 lg:basis-1/6"
                 >
                   <div className="p-1">
-                    <NavLink to={`notes/${item.id}`}>
+                    <Link to={`/notes/${item.id}`}>
                       <Card className="rounded-sm h-96 relative">
                         <CardContent className="aspect-square">
                           <div className=" flex justify-between">
@@ -161,7 +161,7 @@ export default function Home() {
                           </div>
                         </CardContent>
                       </Card>
-                    </NavLink>
+                    </Link>
                   </div>
                 </CarouselItem>
               ))
@@ -198,7 +198,11 @@ export default function Home() {
             {recentTasks &&
               recentTasks.map((item: SingleTask) => {
                 return (
-                  <Link className="p-2" to={`tasks/${item.folderId}`}>
+                  <Link
+                    className="p-2"
+                    to={`/tasks/${item.folderId}`}
+                    key={item.id}
+                  >
                     <div className="hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-md p-1">
                       <div className="flex justify-between items-center gap-x-2">
                         <div>{item.task.substring(0, 50)}</div>

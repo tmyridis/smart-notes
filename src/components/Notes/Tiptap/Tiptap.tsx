@@ -15,19 +15,11 @@ import Placeholder from "@tiptap/extension-placeholder";
 import ImageResize from "tiptap-extension-resize-image";
 import { Notes, SingleNote } from "@/types/types";
 import { useEffect, useState } from "react";
-import { redirect, useLocation, useNavigate, useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import { useDebounce } from "use-debounce";
-import { getDatabase, ref, child, push, update } from "firebase/database";
-import {
-  collection,
-  doc,
-  getDocs,
-  query,
-  Timestamp,
-  updateDoc,
-  where,
-} from "firebase/firestore";
-import { db } from "@/firebaseConfig";
+import { doc, getDoc, Timestamp, updateDoc } from "firebase/firestore";
+import { db } from "@/firebase/firebaseConfig";
+import { useAuth } from "@/context/authContext";
 
 // create a lowlight instance with all languages loaded
 const lowlight = createLowlight(all);
@@ -43,6 +35,7 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
   const { id } = useParams();
   const location = useLocation();
   let navigate = useNavigate();
+  const { user } = useAuth();
 
   const editor = useEditor({
     extensions: [
@@ -213,14 +206,22 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
       var note = folder?.items.filter((note: SingleNote) => note.id === id)[0];
       note["updatedAt"] = Timestamp.fromDate(new Date());
       console.log(note);
-    }
 
-    const notesRef = collection(db, "notesFolder");
-    const q = query(notesRef, where("id", "==", folder?.id));
-    const querySnapshot = await getDocs(q);
-    const testRef = doc(db, "notesFolder", querySnapshot.docs[0].id);
-    console.log(testRef);
-    await updateDoc(testRef, { items: folder?.items, ...folder });
+      if (user) {
+        const uid = user.uid;
+        console.log(uid);
+        const ref = doc(db, "users", uid);
+        const docSnap = await getDoc(ref);
+        var tempData = docSnap.data();
+        var tempFolder = tempData?.notesFolder.find(
+          (item: any) => item.id === folder?.id
+        );
+        tempFolder["items"] = folder?.items;
+        console.log(tempData);
+
+        await updateDoc(ref, { notesFolder: tempData?.notesFolder });
+      }
+    }
   };
 
   const updateNote = (newContent: string) => {

@@ -1,17 +1,24 @@
-import { db } from "@/firebaseConfig";
+import { db } from "@/firebase/firebaseConfig";
 import { Notes, SingleNote } from "@/types/types";
-import { addDoc, collection, doc, getDocs, setDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { createContext, useState, useEffect, useContext } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Timestamp } from "firebase/firestore";
+import { useAuth } from "./authContext";
 // Create the context
 const NotesContext = createContext<any>([]);
 
 // Notes Provider Component
 export function NotesProvider({ children }: { children: any }) {
+  const { user } = useAuth();
+  const fetchNotes = async (uid: string) => {
+    const docRef = doc(db, "users", uid);
+    const docSnap = await getDoc(docRef);
+    return docSnap.data();
+  };
+
   const [notesData, setNotesData] = useState<Notes[]>([]);
   const [status, setStatus] = useState("Saved");
-  const notesRef = collection(db, "notesFolder");
 
   const deleteFolder = (id: Notes["id"]) => {
     var tempNotes = notesData;
@@ -86,7 +93,13 @@ export function NotesProvider({ children }: { children: any }) {
     setNotesData(tempNotes);
     localStorage.setItem("notes", JSON.stringify(tempNotes));
 
-    await setDoc(doc(db, "notesFolder", newFolder.id), newFolder);
+    if (user) {
+      const uid = user.uid;
+      console.log(uid);
+      const ref = doc(db, "users", uid);
+      console.log(ref);
+      await updateDoc(ref, { notesFolder: tempNotes });
+    }
   };
 
   const starNote = async (
@@ -115,22 +128,24 @@ export function NotesProvider({ children }: { children: any }) {
 
   useEffect(() => {
     const getNotes = async () => {
-      const localNotes = JSON.parse(localStorage.getItem("notes") || "[]");
-      if (localNotes.length > 0) {
-        setNotesData(localNotes);
-      } else {
-        const querySnapshot = await getDocs(notesRef);
-        const notesArray = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        })) as Notes[];
-        console.log(notesArray);
-        localStorage.setItem("notes", JSON.stringify(notesArray));
-        setNotesData(notesArray);
+      if (user) {
+        console.log(user);
+        const localNotes = JSON.parse(localStorage.getItem("notes") || "[]");
+        if (localNotes.length > 0) {
+          setNotesData(localNotes);
+        } else {
+          await fetchNotes(user.uid).then((result) => {
+            console.log(result);
+            if (result) {
+              localStorage.setItem("notes", JSON.stringify(result.notesFolder));
+              setNotesData(result.notesFolder);
+            }
+          });
+        }
       }
     };
     getNotes();
-  }, []);
+  }, [user]);
 
   return (
     <NotesContext.Provider
