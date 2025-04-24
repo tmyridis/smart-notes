@@ -1,5 +1,6 @@
 import {
   getAuth,
+  GithubAuthProvider,
   GoogleAuthProvider,
   onAuthStateChanged,
   signInWithPopup,
@@ -7,7 +8,7 @@ import {
   User,
 } from "firebase/auth";
 import { createContext, useContext, useEffect, useState } from "react";
-import { db, googleProvider } from "@/firebase/firebaseConfig";
+import { db, googleProvider, githubProvider } from "@/firebase/firebaseConfig";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 import { useNavigate } from "react-router";
 
@@ -18,12 +19,18 @@ export function AuthProvider({ children }: { children: any }) {
   const [user, setUser] = useState<User>();
 
   const navigate = useNavigate();
-  const handleLogin = async () => {
+  const handleLogin = async (type: string) => {
     try {
-      await signInWithPopup(auth, googleProvider)
+      await signInWithPopup(
+        auth,
+        type === "google" ? googleProvider : githubProvider
+      )
         .then(async (result) => {
           // This gives you a Google Access Token. You can use it to access the Google API.
-          const credential = GoogleAuthProvider.credentialFromResult(result);
+          const credential =
+            type === "google"
+              ? GoogleAuthProvider.credentialFromResult(result)
+              : GithubAuthProvider.credentialFromResult(result);
           if (credential) {
             const user = result.user;
             setUser(result.user);
@@ -52,6 +59,8 @@ export function AuthProvider({ children }: { children: any }) {
           const email = error.customData.email;
           // The AuthCredential type that was used.
           const credential = GoogleAuthProvider.credentialFromError(error);
+
+          console.log(errorCode, errorMessage, credential);
           // ...
         });
     } catch (error) {
@@ -64,6 +73,7 @@ export function AuthProvider({ children }: { children: any }) {
       await signOut(auth);
       setUser(undefined);
       localStorage.clear();
+      navigate("/");
     } catch (error) {
       console.error("Logout Error:", error);
     }
@@ -78,7 +88,7 @@ export function AuthProvider({ children }: { children: any }) {
         navigate("/");
       }
     });
-  }, []);
+  }, [user]);
 
   return (
     <AuthContext.Provider value={{ user, handleLogin, handleLogout }}>

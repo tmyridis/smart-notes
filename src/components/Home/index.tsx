@@ -203,7 +203,7 @@ export default function Home() {
                     to={`/tasks/${item.folderId}`}
                     key={item.id}
                   >
-                    <div className="hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-md p-1">
+                    <div className="hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded-md py-1 px-10">
                       <div className="flex justify-between items-center gap-x-2">
                         <div>{item.task.substring(0, 50)}</div>
                         <Flag

@@ -45,6 +45,7 @@
     "firebase": "^11.5.0",
     "lowlight": "^3.3.0",
     "lucide-react": "^0.479.0",
+    "motion": "^12.9.0",
     "react": "^19.0.0",
     "react-day-picker": "^8.10.1",
     "react-dom": "^19.0.0",
