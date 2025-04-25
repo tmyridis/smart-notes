@@ -48,6 +48,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Timestamp } from "firebase/firestore";
+import { toast } from "sonner";
 
 export interface Column {
   id: UniqueIdentifier;
@@ -314,6 +315,9 @@ export function BoardColumn({
                   type="submit"
                   onClick={() => {
                     createTask2(column.id);
+                    toast.success("Task Added", {
+                      description: `Task with name: ${taskNameToAdd} and description: ${taskDescToAdd} added to ${column.title}`,
+                    });
                   }}
                   disabled={taskNameToAdd === "" || taskDescToAdd === ""}
                 >

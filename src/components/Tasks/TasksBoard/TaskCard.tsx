@@ -49,6 +49,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { addDays, format } from "date-fns";
 import React from "react";
 import { Timestamp } from "firebase/firestore";
+import { toast } from "sonner";
 
 export interface Task {
   id: UniqueIdentifier;
@@ -320,6 +321,7 @@ export function TaskCard({
                       id,
                       editDueDate
                     );
+                    toast.info("Task edited");
                   }}
                 >
                   Save changes
@@ -353,15 +355,16 @@ export function TaskCard({
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction asChild>
-                <Button
-                  type="submit"
-                  onClick={() => {
-                    deleteTask(task, id);
-                  }}
-                >
-                  Delete task
-                </Button>
+              <AlertDialogAction
+                variant="destructive"
+                onClick={() => {
+                  deleteTask(task, id);
+                  toast.success("Task deletion", {
+                    description: `Task: ${task.task} deleted successfully`,
+                  });
+                }}
+              >
+                Delete task
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

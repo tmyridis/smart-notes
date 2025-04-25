@@ -56,9 +56,7 @@ export default function LandingPage() {
         </span>{" "}
       </h2>
       <p className="relative z-20 mx-auto max-w-2xl py-8 text-center text-sm text-neutral-200 md:text-base">
-        You are not your job, you&apos;re not how much money you have in the
-        bank. You are not the car you drive. You&apos;re not the contents of
-        your wallet.
+        Tame your tasks. Hug your notes. Be ridiculously productive.
       </p>
 
       <div className="relative z-20 flex flex-col items-center justify-center gap-4 pt-4 bg-zinc-900/30 w-[600px] h-[600px] rounded-lg">

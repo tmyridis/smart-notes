@@ -38,6 +38,7 @@ import { ScrollArea } from "../../ui/scroll-area";
 import { EmojiPicker } from "@ferrucc-io/emoji-picker";
 import { useTasks } from "@/context/tasksContext";
 import { TasksFolder } from "@/types/types";
+import { toast } from "sonner";
 
 export default function TaskSidebar() {
   const {
@@ -74,7 +75,13 @@ export default function TaskSidebar() {
                   <FolderPen className="size-4" />
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent className="sm:max-w-[425px]">
+              <AlertDialogContent
+                className="sm:max-w-[425px]"
+                onEscapeKeyDown={() => {
+                  setFolderAdd("");
+                  setEmojiIcon("");
+                }}
+              >
                 <AlertDialogHeader>
                   <AlertDialogTitle>Create new folder</AlertDialogTitle>
                   <AlertDialogDescription>
@@ -122,15 +129,23 @@ export default function TaskSidebar() {
                   </div>
                 </div>
                 <AlertDialogFooter>
-                  <AlertDialogCancel onClick={() => setEmojiIcon("")}>
+                  <AlertDialogCancel
+                    onClick={() => {
+                      setEmojiIcon("");
+                      setFolderAdd("");
+                    }}
+                  >
                     Cancel
                   </AlertDialogCancel>
-                  <AlertDialogAction>
+                  <AlertDialogAction asChild>
                     <Button
                       type="submit"
                       disabled={folderAdd === ""}
                       onClick={() => {
                         createFolder(folderAdd, emojiIcon);
+                        toast.success("Folder creation", {
+                          description: `Folder: ${emojiIcon} ${folderAdd} created successfully`,
+                        });
                         setEmojiIcon("");
                         setFolderAdd("");
                       }}
@@ -209,13 +224,20 @@ export default function TaskSidebar() {
                             </div>
                           </div>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction>
+                            <AlertDialogCancel
+                              onClick={() => {
+                                setFolderRename("");
+                              }}
+                            >
+                              Cancel
+                            </AlertDialogCancel>
+                            <AlertDialogAction asChild>
                               <Button
                                 type="submit"
                                 disabled={folderRename === ""}
                                 onClick={() => {
                                   renameFolder(item.id, folderRename);
+                                  toast.info("Folder renamed");
                                 }}
                               >
                                 Save changes
@@ -249,8 +271,10 @@ export default function TaskSidebar() {
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction
+                              variant="destructive"
                               onClick={() => {
                                 deleteFolder(item.id);
+                                toast.success("Folder deleted successfully");
                               }}
                             >
                               Delete folder

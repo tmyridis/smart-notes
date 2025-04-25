@@ -19,6 +19,7 @@ import { ModeToggle } from "./components/mode-toggle";
 import { NotesProvider } from "./context/notesContext";
 import { TasksProvider } from "./context/tasksContext";
 import { AuthProvider } from "./context/authContext";
+import { Toaster } from "sonner";
 function App() {
   return (
     <>
@@ -60,6 +61,7 @@ function App() {
               <div className="fixed right-5 top-5">
                 <ModeToggle />
               </div>
+              <Toaster richColors closeButton position="bottom-center" />
             </SidebarInset>
           </TasksProvider>
         </NotesProvider>

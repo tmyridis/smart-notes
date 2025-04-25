@@ -50,6 +50,7 @@ import { ScrollArea } from "../../ui/scroll-area";
 import { Notes } from "@/types/types";
 import { useNotes } from "../../../context/notesContext";
 import { Toggle } from "@/components/ui/toggle";
+import { toast } from "sonner";
 export default function Notes() {
   const {
     notesData,
@@ -84,7 +85,12 @@ export default function Notes() {
                   <FolderPen className="size-4" />
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent className="sm:max-w-[425px]">
+              <AlertDialogContent
+                className="sm:max-w-[425px]"
+                onEscapeKeyDown={() => {
+                  setFolderAdd("");
+                }}
+              >
                 <AlertDialogHeader>
                   <AlertDialogTitle>Create new folder</AlertDialogTitle>
                   <AlertDialogDescription>
@@ -107,13 +113,22 @@ export default function Notes() {
                   </div>
                 </div>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction>
+                  <AlertDialogCancel
+                    onClick={() => {
+                      setFolderAdd("");
+                    }}
+                  >
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction asChild>
                     <Button
                       type="submit"
                       disabled={folderAdd === ""}
                       onClick={() => {
                         createFolder(folderAdd);
+                        toast.success("Folder creation", {
+                          description: `Folder: ${folderAdd} created successfully`,
+                        });
                         setFolderAdd("");
                       }}
                     >
@@ -150,7 +165,12 @@ export default function Notes() {
                             <span>Add note</span>
                           </ContextMenuItem>
                         </AlertDialogTrigger>
-                        <AlertDialogContent className="sm:max-w-[425px]">
+                        <AlertDialogContent
+                          className="sm:max-w-[425px]"
+                          onEscapeKeyDown={() => {
+                            setNoteToAdd("");
+                          }}
+                        >
                           <AlertDialogHeader>
                             <AlertDialogTitle>
                               Add note to folder: {item.folder}
@@ -175,13 +195,22 @@ export default function Notes() {
                             </div>
                           </div>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction>
+                            <AlertDialogCancel
+                              onClick={() => {
+                                setNoteToAdd("");
+                              }}
+                            >
+                              Cancel
+                            </AlertDialogCancel>
+                            <AlertDialogAction asChild>
                               <Button
                                 type="submit"
                                 disabled={noteToAdd === ""}
                                 onClick={() => {
                                   addNote(item.id, noteToAdd);
+                                  toast.success("Note Added", {
+                                    description: `Note with name: ${noteToAdd} added to folder: ${item.folder}`,
+                                  });
                                   setNoteToAdd("");
                                 }}
                               >
@@ -229,12 +258,13 @@ export default function Notes() {
                           </div>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction>
+                            <AlertDialogAction asChild>
                               <Button
                                 type="submit"
                                 disabled={folderRename === ""}
                                 onClick={() => {
                                   renameFolder(item.id, folderRename);
+                                  toast.info("Folder renamed");
                                 }}
                               >
                                 Save changes
@@ -268,8 +298,10 @@ export default function Notes() {
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction
+                              variant="destructive"
                               onClick={() => {
                                 deleteFolder(item.id);
+                                toast.success("Folder deleted successfully");
                               }}
                             >
                               Delete folder
@@ -357,8 +389,12 @@ export default function Notes() {
                                 <AlertDialogFooter>
                                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                                   <AlertDialogAction
+                                    variant="destructive"
                                     onClick={() => {
                                       deleteNote(item.id, subItem.id);
+                                      toast.success("Note deletion", {
+                                        description: `Note: ${subItem.title} deleted from folder: ${item.folder}`,
+                                      });
                                     }}
                                   >
                                     Delete note
