@@ -54,16 +54,17 @@ export function KanbanBoard({
     columnId: any,
     taskName: string,
     taskDescription: string,
-    dueDate: Timestamp,
     priority: string,
-    id: TasksFolder["id"]
+    id: TasksFolder["id"],
+    dueDate?: Timestamp
   ) => void;
   editTask: (
     taskName: string,
     taskDescription: string,
     task: SingleTask,
     priority: string,
-    id: TasksFolder["id"]
+    id: TasksFolder["id"],
+    taskDueDate?: Timestamp
   ) => void;
   deleteTask: (task: SingleTask, id: TasksFolder["id"]) => void;
 }) {

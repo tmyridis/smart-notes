@@ -116,9 +116,9 @@ export function TasksProvider({ children }: { children: any }) {
     columnId: any,
     taskName: string,
     taskDescription: string,
-    dueDate: Timestamp,
     priority: string,
-    id: TasksFolder["id"]
+    id: TasksFolder["id"],
+    dueDate?: Timestamp
   ) => {
     if (taskName !== "" && taskDescription !== "") {
       var newTask: SingleTask = {
@@ -162,17 +162,18 @@ export function TasksProvider({ children }: { children: any }) {
   const editTask = async (
     taskName: string,
     taskDescription: string,
-    taskDueDate: Timestamp,
     task: SingleTask,
     priority: string,
-    id: TasksFolder["id"]
+    id: TasksFolder["id"],
+    taskDueDate?: Timestamp
   ) => {
     if (taskName !== "" && taskDescription !== "" && taskDueDate) {
       var editedTask = task;
       console.log(priority);
       editedTask["task"] = taskName;
       editedTask["description"] = taskDescription;
-      editedTask["dueTo"] = Timestamp.fromDate(taskDueDate);
+      editedTask["dueTo"] =
+        taskDueDate !== undefined ? Timestamp.fromDate(taskDueDate) : undefined;
       editedTask["priority"] = priority;
 
       var tempTasks = JSON.parse(JSON.stringify(tasksData));

@@ -62,10 +62,10 @@ interface TaskCardProps {
   editTask: (
     taskName: string,
     taskDescription: string,
-    taskDueDate: Timestamp,
     task: SingleTask,
     priority: string,
-    id: TasksFolder["id"]
+    id: TasksFolder["id"],
+    taskDueDate?: Timestamp
   ) => void;
   deleteTask: (task: SingleTask, id: TasksFolder["id"]) => void;
 }
@@ -140,10 +140,12 @@ export function TaskCard({
               <span className="sr-only">Move task</span>
               <GripVertical />
             </Button>
-            <div className="text-xs font-semibold">
-              {"Due to "}
-              {new Date(task.dueTo.seconds * 1000).toLocaleString()}
-            </div>
+            {task.dueTo && (
+              <div className="text-xs font-semibold">
+                {"Due to "}
+                {new Date(task.dueTo.seconds * 1000).toLocaleString()}
+              </div>
+            )}
             <Badge variant={"outline"} className="ml-auto font-semibold w-20">
               <Flag
                 strokeWidth={3}
@@ -182,7 +184,8 @@ export function TaskCard({
                 e.preventDefault();
                 setEditTaskName(task.task);
                 setEditTaskDesc(task.description);
-                setEditDueDate(new Date(task.dueTo.seconds * 1000));
+                task.dueTo &&
+                  setEditDueDate(new Date(task.dueTo.seconds * 1000));
                 setEditPriority(task.priority);
               }}
             >
@@ -307,17 +310,15 @@ export function TaskCard({
               <AlertDialogAction asChild>
                 <Button
                   type="submit"
-                  disabled={
-                    !editDueDate || editTaskDesc === "" || editTaskName === ""
-                  }
+                  disabled={editTaskDesc === "" || editTaskName === ""}
                   onClick={() => {
                     editTask(
                       editTaskName,
                       editTaskDesc,
-                      editDueDate,
                       task,
                       editPriority,
-                      id
+                      id,
+                      editDueDate
                     );
                   }}
                 >

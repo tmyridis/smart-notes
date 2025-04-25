@@ -33,7 +33,7 @@ export default function Home() {
           folderId: folder.id,
         }))
       )
-      .filter((item: any) => item.status !== "done")
+      .filter((item: any) => item.status !== "done" && item.dueTo !== undefined)
       .sort(
         (a: SingleTask, b: SingleTask) =>
           new Date(b.dueTo.seconds * 1000).valueOf() -
@@ -196,7 +196,7 @@ export default function Home() {
           <div className="font-bold text-md">My tasks</div>
           <div>
             {recentTasks &&
-              recentTasks.map((item: SingleTask) => {
+              recentTasks.map((item: any) => {
                 return (
                   <Link
                     className="p-2"
@@ -225,12 +225,16 @@ export default function Home() {
                           }`}
                         />
                       </div>
-                      <div className="">
-                        <div className="text-xs font-medium text-zinc-400/80">
-                          Due to{" "}
-                          {new Date(item.dueTo.seconds * 1000).toLocaleString()}
+                      {item.dueTo && (
+                        <div className="">
+                          <div className="text-xs font-medium text-zinc-400/80">
+                            Due to{" "}
+                            {new Date(
+                              item.dueTo.seconds * 1000
+                            ).toLocaleString()}
+                          </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   </Link>
                 );

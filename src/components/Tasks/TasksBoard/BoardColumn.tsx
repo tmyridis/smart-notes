@@ -69,17 +69,17 @@ interface BoardColumnProps {
     columnId: any,
     taskName: string,
     taskDescription: string,
-    dueDate: Timestamp,
     priority: string,
-    id: TasksFolder["id"]
+    id: TasksFolder["id"],
+    dueDate?: Timestamp
   ) => void;
   editTask: (
     taskName: string,
     taskDescription: string,
-    taskDueDate: Timestamp,
     task: SingleTask,
     priority: string,
-    id: TasksFolder["id"]
+    id: TasksFolder["id"],
+    taskDueDate?: Timestamp
   ) => void;
   deleteTask: (task: SingleTask, id: TasksFolder["id"]) => void;
 }
@@ -107,9 +107,9 @@ export function BoardColumn({
       columnId,
       taskNameToAdd,
       taskDescToAdd,
-      Timestamp.fromDate(dueDate),
       priority,
-      id
+      id,
+      dueDate !== undefined ? Timestamp.fromDate(dueDate) : undefined
     );
     setTaskNameToAdd("");
     setTaskDescToAdd("");
@@ -314,11 +314,8 @@ export function BoardColumn({
                   type="submit"
                   onClick={() => {
                     createTask2(column.id);
-                    console.log(Timestamp.fromDate(dueDate));
                   }}
-                  disabled={
-                    taskNameToAdd === "" || taskDescToAdd === "" || !dueDate
-                  }
+                  disabled={taskNameToAdd === "" || taskDescToAdd === ""}
                 >
                   Create task
                 </Button>

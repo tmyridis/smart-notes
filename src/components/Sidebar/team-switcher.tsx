@@ -29,7 +29,7 @@ export function TeamSwitcher({
 }) {
   const { isMobile } = useSidebar();
   const [activeTeam, setActiveTeam] = React.useState(teams[0]);
-
+  const [hiddenSidebar, setHiddenSidebar] = React.useState(false);
   if (!activeTeam) {
     return null;
   }
@@ -37,8 +37,8 @@ export function TeamSwitcher({
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <div className="flex items-center">
-          <DropdownMenu>
+        <div className="flex items-center gap-x-1">
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <SidebarMenuButton
                 size="lg"
@@ -88,9 +88,29 @@ export function TeamSwitcher({
                 </div>
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
-          <SidebarTrigger />
+          </DropdownMenu> */}
+          <div className="text-lg font-semibold leading-tight truncate">
+            smart-notes/~
+          </div>
+          <div className="flex gap-x-1 justify-center">
+            <div className="h-2 w-2 bg-red-400 rounded-full"></div>
+            <div className="h-2 w-2 bg-yellow-400 rounded-full"></div>
+            <div className="h-2 w-2 bg-green-400 rounded-full"></div>
+          </div>
+          <SidebarTrigger
+            className="ml-auto"
+            onClick={() => {
+              setHiddenSidebar(true);
+            }}
+            hidden={hiddenSidebar}
+          />
         </div>
+        <SidebarTrigger
+          hidden={!hiddenSidebar}
+          onClick={() => {
+            setHiddenSidebar(false);
+          }}
+        />
       </SidebarMenuItem>
     </SidebarMenu>
   );
