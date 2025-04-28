@@ -22,6 +22,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/authContext";
+import { NavProjects } from "./nav-projects";
 
 // This is sample data.
 const data = {

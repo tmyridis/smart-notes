@@ -12,9 +12,13 @@ import { Link } from "react-router";
 import { useNotes } from "@/context/notesContext";
 import { Notes, SingleNote, SingleTask, TasksFolder } from "@/types/types";
 import { useTasks } from "@/context/tasksContext";
-import { Flag, Star } from "lucide-react";
+import { CirclePlus, Flag, Star } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/context/authContext";
+import { useSidebar } from "../ui/sidebar";
+import { useDebounce } from "use-debounce";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { db } from "@/firebase/firebaseConfig";
 
 export default function Home() {
   const { notesData } = useNotes();
@@ -22,8 +26,72 @@ export default function Home() {
   const [presentedNotes, setPresentedNotes] = useState([]);
   const [notesPressed, setNotesPressed] = useState("recent");
   const [recentTasks, setRecentTasks] = useState([]);
-  const [scratchPad, setScratchpad] = useState<string>("");
+  const [scratchPad, setScratchpad] = useState<string | null>(
+    localStorage.getItem("scratchpad")
+      ? localStorage.getItem("scratchpad")
+      : null
+  );
+
+  const [debouncedEditor] = useDebounce(scratchPad, 2000);
+  const [debouncedEditorFirebase] = useDebounce(scratchPad, 5000);
+
+  const syncPad = async () => {
+    if (user) {
+      const uid = user.uid;
+      console.log(uid);
+      const ref = doc(db, "users", uid);
+
+      await updateDoc(ref, { scratchPad: scratchPad });
+    }
+  };
+
+  useEffect(() => {
+    if (debouncedEditor) {
+      if (scratchPad !== null) {
+        localStorage.setItem("scratchpad", scratchPad);
+      }
+    }
+  }, [debouncedEditor]);
+
+  useEffect(() => {
+    if (debouncedEditorFirebase) {
+      if (scratchPad !== null) {
+        console.log("saving to firebase scratch pad");
+        syncPad();
+      }
+    }
+  }, [debouncedEditorFirebase]);
+
   const { user } = useAuth();
+
+  const fetchPad = async (uid: string) => {
+    const docRef = doc(db, "users", uid);
+    const docSnap = await getDoc(docRef);
+    return docSnap.data();
+  };
+
+  useEffect(() => {
+    const getPad = async () => {
+      if (user) {
+        console.log(user);
+        const pad = localStorage.getItem("scratchpad");
+        if (pad !== null) {
+          setScratchpad(pad);
+        } else {
+          await fetchPad(user.uid).then((result) => {
+            console.log(result);
+            if (result) {
+              localStorage.setItem("scratchpad", result.scratchPad);
+              setScratchpad(result.scratchPad);
+            }
+          });
+        }
+      }
+    };
+
+    getPad();
+  }, [user]);
+
   useEffect(() => {
     console.log(tasksData);
     const top5RecentTasks = tasksData
@@ -70,11 +138,14 @@ export default function Home() {
     }
   }, [notesPressed, notesData]);
 
+  const { isMobile } = useSidebar();
   return (
-    <div className="w-full">
-      <div className="pl-10 pt-10">
-        <div className="text-sm font-semibold">Start taking notes...</div>
-        <div className="text-xl font-bold">{user?.displayName}'s Home</div>
+    <div className={`${isMobile ? "w-77" : "w-full"}`}>
+      <div className={`${isMobile ? "flex justify-center" : ""}`}>
+        <div className="pl-10 pt-10">
+          <div className="text-sm font-semibold">Express yourself...</div>
+          <div className="text-xl font-bold">{user?.displayName}'s Home</div>
+        </div>
       </div>
 
       <div className="flex justify-center w-full pt-10">
@@ -84,9 +155,17 @@ export default function Home() {
           }}
           className="w-full max-w-7xl"
         >
-          <div className="flex items-center justify-between">
-            <div className="font-bold text-md">Notes</div>
-            <div className="flex gap-x-5">
+          <div
+            className={`${
+              isMobile ? "pl-2 pb-2" : "flex items-center justify-between"
+            }`}
+          >
+            <div className="flex justify-center font-bold text-md">Notes</div>
+            <div
+              className={`${
+                isMobile ? "pt-2" : ""
+              } flex justify-center gap-x-5`}
+            >
               <Toggle
                 variant="outline"
                 size="sm"
@@ -121,13 +200,12 @@ export default function Home() {
               </Toggle>
             </div>
           </div>
-          <CarouselContent>
-            {presentedNotes ? (
+          <CarouselContent
+            className={`${isMobile && "ml-2 flex justify-center"}`}
+          >
+            {presentedNotes.length > 0 ? (
               presentedNotes.map((item: SingleNote) => (
-                <CarouselItem
-                  key={item.id}
-                  className="md:basis-1/2 lg:basis-1/6"
-                >
+                <CarouselItem key={item.id} className="basis-1/2 lg:basis-1/6">
                   <div className="p-1">
                     <Link to={`/notes/${item.id}`}>
                       <Card className="rounded-sm h-96 relative">
@@ -169,16 +247,39 @@ export default function Home() {
               <></>
             )}
           </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
+          {presentedNotes.length == 0 && notesPressed === "recent" && (
+            <div className="text-sm font-semibold flex justify-center w-full gap-x-2 items-center">
+              <span>No notes yet. You can add notes by clicking here </span>
+              <Link to="/notes">
+                <CirclePlus />
+              </Link>
+            </div>
+          )}
+          {presentedNotes.length == 0 && notesPressed === "starred" && (
+            <div className="text-sm font-semibold flex justify-center w-full items-center">
+              <span>You dont have any starred notes yet. </span>
+            </div>
+          )}
+          {!isMobile && (
+            <>
+              <CarouselPrevious />
+              <CarouselNext />
+            </>
+          )}
         </Carousel>
       </div>
 
-      <div className="px-10 mt-10 flex justify-around gap-x-10">
+      <div
+        className={`${
+          isMobile
+            ? "grid gap-y-3 pl-3 pt-2"
+            : "flex justify-around gap-x-10 mx-10 mt-10"
+        }  `}
+      >
         <div className="relative">
           <div className="font-bold text-md">Scratch pad</div>
           <div className="absolute bottom-2 right-2">
-            {scratchPad.length}/500
+            {scratchPad?.length}/500
           </div>
           <Textarea
             maxLength={500}
@@ -189,9 +290,9 @@ export default function Home() {
             }}
           />
         </div>
-        <div>
+        {/* <div>
           <div className="font-bold text-md">Calendar</div>
-        </div>
+        </div> */}
         <div>
           <div className="font-bold text-md">My tasks</div>
           <div>

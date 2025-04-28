@@ -49,6 +49,7 @@ import {
 } from "@/components/ui/select";
 import { Timestamp } from "firebase/firestore";
 import { toast } from "sonner";
+import { useSidebar } from "@/components/ui/sidebar";
 
 export interface Column {
   id: UniqueIdentifier;
@@ -349,8 +350,9 @@ export function BoardColumn({
 
 export function BoardContainer({ children }: { children: React.ReactNode }) {
   const dndContext = useDndContext();
+  const { state } = useSidebar();
 
-  const variations = cva("px-2 md:px-0 flex lg:justify-center pb-4", {
+  const variations = cva("px-2 md:px-0 flex lg:justify-center", {
     variants: {
       dragging: {
         default: "snap-x snap-mandatory",
@@ -365,7 +367,11 @@ export function BoardContainer({ children }: { children: React.ReactNode }) {
         dragging: dndContext.active ? "active" : "default",
       })}
     >
-      <div className="flex gap-4 items-center flex-row justify-center">
+      <div
+        className={`flex gap-4 items-center flex-row justify-center ${
+          state === "collapsed" ? "ml-40" : "ml-10"
+        }`}
+      >
         {children}
       </div>
       <ScrollBar orientation="horizontal" />

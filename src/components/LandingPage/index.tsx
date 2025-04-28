@@ -51,11 +51,11 @@ export default function LandingPage() {
     <div className="relative flex h-screen w-full flex-col items-center pt-15 overflow-hidden bg-zinc-900">
       <h2 className="relative z-20 mx-auto max-w-4xl text-center text-2xl font-bold text-balance text-white md:text-4xl lg:text-6xl">
         This is your chance to start taking{" "}
-        <span className="relative z-20 inline-block rounded-xl bg-blue-500/40 px-4 py-1 text-white underline decoration-sky-500 decoration-[6px] underline-offset-[16px] backdrop-blur-sm">
+        <span className="relative z-20 inline-block rounded-xl bg-purple-400/70 px-4 py-1 text-white underline decoration-purple-500 decoration-[4px] underline-offset-[16px] backdrop-blur-sm">
           smart notes.
         </span>{" "}
       </h2>
-      <p className="relative z-20 mx-auto max-w-2xl py-8 text-center text-sm text-neutral-200 md:text-base">
+      <p className="font-semibold relative z-20 mx-auto max-w-2xl py-8 text-center text-lg text-neutral-200 md:text-base">
         Tame your tasks. Hug your notes. Be ridiculously productive.
       </p>
 

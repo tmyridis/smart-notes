@@ -132,7 +132,7 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
     editorProps: {
       attributes: {
         class:
-          "border-1 border-zinc-300 h-full min-h-screen dark:border-zinc-700 prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl  focus:outline-none p-2",
+          "flex flex-none border-1 border-zinc-300 h-full min-h-screen dark:border-zinc-700 prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl  focus:outline-none p-2",
       },
     },
     onUpdate: ({ editor }) => {
@@ -146,7 +146,7 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
   });
 
   const [debouncedEditor] = useDebounce(editor?.getHTML(), 2000);
-  const [debouncedEditorFirebase] = useDebounce(editor?.getHTML(), 10000);
+  const [debouncedEditorFirebase] = useDebounce(editor?.getHTML(), 5000);
   const [toUpdate, setToUpdate] = useState(false);
 
   useEffect(() => {

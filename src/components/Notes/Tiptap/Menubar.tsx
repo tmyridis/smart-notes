@@ -131,7 +131,7 @@ export default function Menubar({ editor }: { editor: Editor | null }) {
   ];
 
   return (
-    <div className="flex gap-x-2 pl-5 py-1 h-10">
+    <div className="grid grid-cols-5 xl:flex gap-x-2 pl-5 py-1 h-auto">
       {headingOptions.map((option, index) => (
         <Toggle
           key={index}

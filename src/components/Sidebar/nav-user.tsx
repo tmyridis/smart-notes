@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useNavigate } from "react-router";
 import { useAuth } from "@/context/authContext";
+import { ModeToggle } from "../mode-toggle";
 
 export function NavUser({
   user,
@@ -102,6 +103,10 @@ export function NavUser({
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <ModeToggle />
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => {
