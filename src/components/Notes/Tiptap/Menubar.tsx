@@ -1,7 +1,7 @@
 import React, { ChangeEvent, useCallback, useState } from "react";
 import Highlight from "@tiptap/extension-highlight";
 import TextAlign from "@tiptap/extension-text-align";
-import { Editor, EditorContent, useEditor } from "@tiptap/react";
+import { BubbleMenu, Editor, EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 
 import {
@@ -21,6 +21,9 @@ import {
   Code,
   Minus,
   Image,
+  CircleCheck,
+  ItalicIcon,
+  StrikethroughIcon,
 } from "lucide-react";
 import { Toggle } from "../../ui/toggle";
 
@@ -28,12 +31,10 @@ import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
 } from "../../ui/dropdown-menu";
 import { Button } from "../../ui/button";
 import { Separator } from "../../ui/separator";
-import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 
 export default function Menubar({ editor }: { editor: Editor | null }) {
@@ -124,6 +125,11 @@ export default function Menubar({ editor }: { editor: Editor | null }) {
       preesed: editor.isActive("codeBlock"),
     },
     {
+      icon: <CircleCheck className="size-4" />,
+      onClick: () => editor.chain().focus().toggleTaskList().run(),
+      preesed: editor.isActive("taskList"),
+    },
+    {
       icon: <Minus className="size-4" />,
       onClick: () => editor.chain().focus().setHorizontalRule().run(),
       preesed: editor.isActive("horizontalRule"),
@@ -132,6 +138,34 @@ export default function Menubar({ editor }: { editor: Editor | null }) {
 
   return (
     <div className="grid grid-cols-5 xl:flex gap-x-2 pl-5 py-1 h-auto">
+      {editor && (
+        <BubbleMenu editor={editor} tippyOptions={{ duration: 100 }}>
+          <div className="flex bg-zinc-300 dark:bg-zinc-700 rounded-md justify-between gap-x-2 p-2 border-1 border-zinc-700 dark:border-zinc-500">
+            <Toggle
+              pressed={editor.isActive("bold")}
+              onPressedChange={() => editor.chain().focus().toggleBold().run()}
+            >
+              <Bold className="size-4" />
+            </Toggle>
+            <Toggle
+              pressed={editor.isActive("italic")}
+              onPressedChange={() =>
+                editor.chain().focus().toggleItalic().run()
+              }
+            >
+              <ItalicIcon className="size-4" />
+            </Toggle>
+            <Toggle
+              pressed={editor.isActive("strike")}
+              onPressedChange={() =>
+                editor.chain().focus().toggleStrike().run()
+              }
+            >
+              <StrikethroughIcon className="size-4" />
+            </Toggle>
+          </div>
+        </BubbleMenu>
+      )}
       {headingOptions.map((option, index) => (
         <Toggle
           key={index}

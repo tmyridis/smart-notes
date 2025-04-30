@@ -1,5 +1,5 @@
 // src/Tiptap.tsx
-import { useEditor, EditorContent } from "@tiptap/react";
+import { useEditor, EditorContent, ReactNodeViewRenderer } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
@@ -12,6 +12,9 @@ import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
 import Menubar from "./Menubar";
 import FileHandler from "@tiptap-pro/extension-file-handler";
 import Placeholder from "@tiptap/extension-placeholder";
+import Typography from "@tiptap/extension-typography";
+import TaskItem from "@tiptap/extension-task-item";
+import TaskList from "@tiptap/extension-task-list";
 import ImageResize from "tiptap-extension-resize-image";
 import { Notes, SingleNote } from "@/types/types";
 import { useEffect, useState } from "react";
@@ -20,6 +23,7 @@ import { useDebounce } from "use-debounce";
 import { doc, getDoc, Timestamp, updateDoc } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
 import { useAuth } from "@/context/authContext";
+import CodeBlockComponent from "./CodeBlockComponent";
 
 // create a lowlight instance with all languages loaded
 const lowlight = createLowlight(all);
@@ -39,6 +43,11 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
 
   const editor = useEditor({
     extensions: [
+      Typography,
+      TaskList,
+      TaskItem.configure({
+        nested: true,
+      }),
       StarterKit.configure({
         bulletList: {
           HTMLAttributes: {
@@ -65,7 +74,11 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
         types: ["heading", "paragraph"],
       }),
       Highlight.configure({ multicolor: true }),
-      CodeBlockLowlight.configure({
+      CodeBlockLowlight.extend({
+        addNodeView() {
+          return ReactNodeViewRenderer(CodeBlockComponent);
+        },
+      }).configure({
         lowlight,
         HTMLAttributes: {
           class: "bg-zinc-700",
@@ -132,7 +145,8 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
     editorProps: {
       attributes: {
         class:
-          "flex flex-none border-1 border-zinc-300 h-full min-h-screen dark:border-zinc-700 prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl  focus:outline-none p-2",
+          "flex-none border-1 border-zinc-300 h-full min-h-screen dark:border-zinc-700 prose prose-sm sm:prose-base lg:prose-lg xl:prose-2xl  focus:outline-none p-2",
+        spellcheck: "false",
       },
     },
     onUpdate: ({ editor }) => {

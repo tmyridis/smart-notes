@@ -11,6 +11,7 @@ import {
 import { createContext, useState, useEffect, useContext } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useAuth } from "./authContext";
+import { useEvents } from "./eventsContext";
 const initialState = [
   {
     folder: "",
@@ -37,6 +38,8 @@ const TasksContext = createContext<any>([]);
 export function TasksProvider({ children }: { children: any }) {
   const [tasksData, setTasksData] = useState<TasksFolder[]>([]);
   const [status, setStatus] = useState("Saved");
+  const { eventsData, handleEventAdd, handleEventDelete, handleEventUpdate } =
+    useEvents();
   const { user } = useAuth();
 
   const fetchTasks = async (uid: string) => {
@@ -130,6 +133,27 @@ export function TasksProvider({ children }: { children: any }) {
         priority: priority,
         status: columnId,
       };
+
+      if (newTask.dueTo) {
+        const taskEvent = {
+          title: "Task: " + taskName,
+          description: taskDescription,
+          id: newTask.id,
+          start: new Date(),
+          end: new Date(newTask.dueTo.seconds * 1000),
+          allDay: false,
+          location: "",
+          color:
+            priority === "high"
+              ? "red"
+              : priority === "medium"
+              ? "orange"
+              : "yellow",
+          editable: false,
+        };
+
+        handleEventAdd(taskEvent);
+      }
       console.log(newTask);
       console.log(id);
       var tempTasks = JSON.parse(JSON.stringify(tasksData));
@@ -176,6 +200,27 @@ export function TasksProvider({ children }: { children: any }) {
         taskDueDate !== undefined ? Timestamp.fromDate(taskDueDate) : undefined;
       editedTask["priority"] = priority;
 
+      if (taskName !== "" || taskDueDate || priority) {
+        const taskEvent = {
+          title: "Task: " + taskName,
+          description: taskDescription,
+          id: editedTask.id,
+          start: new Date(editedTask.createdAt.seconds * 1000),
+          end: new Date(editedTask.dueTo.seconds * 1000),
+          allDay: false,
+          location: "",
+          color:
+            priority === "high"
+              ? "red"
+              : priority === "medium"
+              ? "orange"
+              : "yellow",
+          editable: false,
+        };
+
+        handleEventUpdate(taskEvent, true);
+      }
+
       var tempTasks = JSON.parse(JSON.stringify(tasksData));
       var taskFolder = tempTasks.find(
         (obj: { id: TasksFolder["id"] }) => obj.id === id
@@ -205,6 +250,7 @@ export function TasksProvider({ children }: { children: any }) {
   };
 
   const deleteTask = async (task: SingleTask, id: TasksFolder["id"]) => {
+    handleEventDelete(task.id);
     var tempTasks = JSON.parse(JSON.stringify(tasksData));
     var taskFolder = tempTasks.find(
       (obj: { id: TasksFolder["id"] }) => obj.id === id

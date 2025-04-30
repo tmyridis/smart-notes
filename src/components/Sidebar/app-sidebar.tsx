@@ -9,6 +9,7 @@ import {
   CircleCheck,
   House,
   ScrollText,
+  CalendarRange,
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
@@ -64,6 +65,11 @@ const data = {
       title: "Tasks",
       url: "/tasks",
       icon: CircleCheck,
+    },
+    {
+      title: "Calendar",
+      url: "/calendar",
+      icon: CalendarRange,
     },
   ],
   projects: [

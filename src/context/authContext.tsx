@@ -43,6 +43,8 @@ export function AuthProvider({ children }: { children: any }) {
               photoURL: user.photoURL,
               notesFolder: [],
               tasksFolder: [],
+              eventsFolder: [],
+              scratchPad: "",
             };
             const ref = doc(db, "users", user.uid);
             const docSnap = await getDoc(ref);

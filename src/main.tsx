@@ -11,6 +11,7 @@ import Tasks from "./components/Tasks/tasks.tsx";
 import Home from "./components/Home/index.tsx";
 import LandingPage from "./components/LandingPage/index.tsx";
 import { AuthProvider } from "./context/authContext.tsx";
+import Calendar from "./components/Calendar/index.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -27,6 +28,7 @@ createRoot(document.getElementById("root")!).render(
               <Route path="tasks" element={<TaskSidebar />}>
                 <Route path=":id" element={<Tasks />}></Route>
               </Route>
+              <Route path="calendar" element={<Calendar />}></Route>
             </Route>
           </Routes>
         </AuthProvider>

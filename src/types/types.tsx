@@ -32,3 +32,15 @@ export interface SingleTask {
   dueTo?: Timestamp;
   priority: string;
 }
+
+export interface Event {
+  title: string;
+  description: string;
+  id: string;
+  start: Timestamp;
+  end: Timestamp;
+  allDay: boolean;
+  location: string;
+  color: string;
+  editable?: boolean;
+}
