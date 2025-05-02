@@ -17,6 +17,7 @@ import {
   SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { Label } from "../ui/label";
 
 export function TeamSwitcher({
   teams,
@@ -93,9 +94,9 @@ export function TeamSwitcher({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu> */}
-          <div className="text-lg font-semibold leading-tight truncate">
+          <Label className="text-lg font-semibold leading-tight truncate">
             smart-notes/~
-          </div>
+          </Label>
           <div className="flex gap-x-1 justify-center">
             <div className="h-2 w-2 bg-red-400 rounded-full"></div>
             <div className="h-2 w-2 bg-yellow-400 rounded-full"></div>

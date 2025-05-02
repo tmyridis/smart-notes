@@ -17,6 +17,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSkeleton,
   SidebarMenuSub,
   useSidebar,
 } from "@/components/ui/sidebar";
@@ -52,6 +53,8 @@ import { Notes } from "@/types/types";
 import { useNotes } from "../../../context/notesContext";
 import { Toggle } from "@/components/ui/toggle";
 import { toast } from "sonner";
+import React from "react";
+import CustomSkeleton from "@/components/ui/custom-skeleton";
 export default function Notes() {
   const {
     notesData,
@@ -73,81 +76,81 @@ export default function Notes() {
   const [folderRename, setFolderRename] = useState("");
   const [noteToAdd, setNoteToAdd] = useState("");
   const [folderAdd, setFolderAdd] = useState("");
-  const { isMobile } = useSidebar();
 
   return (
     <>
-      {true ? (
-        <ScrollArea className="bg-zinc-200 dark:bg-zinc-800 w-auto md:w-80 min-h-full h-screen flex-none">
-          <SidebarGroup>
-            <SidebarGroupLabel className="font-bold text-md flex justify-between mb-2">
-              My Notes
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant={"ghost"}>
-                    <FolderPen className="size-4" />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent
-                  className="sm:max-w-[425px]"
-                  onEscapeKeyDown={() => {
-                    setFolderAdd("");
-                  }}
-                >
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Create new folder</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      Add your folder's title. Click create when you're done.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="note" className="text-right">
-                        Folder name
-                      </Label>
-                      <Input
-                        id="note"
-                        value={folderAdd}
-                        onChange={(e) => {
-                          setFolderAdd(e.target.value);
-                        }}
-                        className="col-span-3"
-                      />
-                    </div>
+      <ScrollArea className="bg-zinc-200 dark:bg-zinc-800 w-auto md:w-80 min-h-full h-screen flex-none">
+        <SidebarGroup>
+          <SidebarGroupLabel className="font-bold text-md flex justify-between mb-2">
+            My Notes
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant={"ghost"}>
+                  <FolderPen className="size-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent
+                className="sm:max-w-[425px]"
+                onEscapeKeyDown={() => {
+                  setFolderAdd("");
+                }}
+              >
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Create new folder</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Add your folder's title. Click create when you're done.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="note" className="text-right">
+                      Folder name
+                    </Label>
+                    <Input
+                      id="note"
+                      value={folderAdd}
+                      onChange={(e) => {
+                        setFolderAdd(e.target.value);
+                      }}
+                      className="col-span-3"
+                    />
                   </div>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel
+                </div>
+                <AlertDialogFooter>
+                  <AlertDialogCancel
+                    onClick={() => {
+                      setFolderAdd("");
+                    }}
+                  >
+                    Cancel
+                  </AlertDialogCancel>
+                  <AlertDialogAction asChild>
+                    <Button
+                      type="submit"
+                      disabled={folderAdd === ""}
                       onClick={() => {
+                        createFolder(folderAdd);
+                        toast.success("Folder creation", {
+                          description: `Folder: ${folderAdd} created successfully`,
+                        });
                         setFolderAdd("");
                       }}
                     >
-                      Cancel
-                    </AlertDialogCancel>
-                    <AlertDialogAction asChild>
-                      <Button
-                        type="submit"
-                        disabled={folderAdd === ""}
-                        onClick={() => {
-                          createFolder(folderAdd);
-                          toast.success("Folder creation", {
-                            description: `Folder: ${folderAdd} created successfully`,
-                          });
-                          setFolderAdd("");
-                        }}
-                      >
-                        Create folder
-                      </Button>
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </SidebarGroupLabel>
-            <SidebarMenu>
-              {notes.map((item) => (
+                      Create folder
+                    </Button>
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </SidebarGroupLabel>
+          <SidebarMenu>
+            {notes.length > 0 ? (
+              notes.map((item) => (
                 <Collapsible
                   key={item.id}
                   asChild
                   className="group/collapsible"
+                  defaultOpen={true}
                 >
                   <SidebarMenuItem>
                     <ContextMenu>
@@ -422,15 +425,14 @@ export default function Notes() {
                     </CollapsibleContent>
                   </SidebarMenuItem>
                 </Collapsible>
-              ))}
-            </SidebarMenu>
-          </SidebarGroup>
-        </ScrollArea>
-      ) : (
-        <div className="relative w-full">
-          <CirclePlus className="fixed bottom-5 right-5" />
-        </div>
-      )}
+              ))
+            ) : (
+              <CustomSkeleton />
+            )}
+          </SidebarMenu>
+        </SidebarGroup>
+      </ScrollArea>
+
       <Outlet context={[notes]} />
     </>
   );

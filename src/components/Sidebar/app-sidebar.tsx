@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/authContext";
 import { NavProjects } from "./nav-projects";
+import { Skeleton } from "../ui/skeleton";
+import CustomSkeleton from "../ui/custom-skeleton";
 
 // This is sample data.
 const data = {
@@ -109,7 +111,25 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {/* <SidebarRail /> */}
         </Sidebar>
       ) : (
-        <></>
+        <Sidebar collapsible="icon" {...props}>
+          <SidebarHeader>
+            <div className="flex justify-center items-center gap-x-1 w-full">
+              <div className="space-y-2 w-full">
+                <Skeleton className="h-6 w-full" />
+              </div>
+            </div>
+          </SidebarHeader>
+          <SidebarContent>
+            <CustomSkeleton />
+          </SidebarContent>
+          <SidebarFooter>
+            <div className="flex justify-center items-center gap-x-1 w-full">
+              <div className="space-y-2 w-full">
+                <Skeleton className="h-10 w-full mb-2" />
+              </div>
+            </div>
+          </SidebarFooter>
+        </Sidebar>
       )}
     </>
   );

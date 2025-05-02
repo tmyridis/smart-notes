@@ -19,6 +19,7 @@ import { useSidebar } from "../ui/sidebar";
 import { useDebounce } from "use-debounce";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "@/firebase/firebaseConfig";
+import { stripAndSpaceElements } from "@/lib/utils";
 
 export default function Home() {
   const { notesData } = useNotes();
@@ -113,6 +114,7 @@ export default function Home() {
     if (notesPressed === "recent") {
       const top10RecentItems = notesData
         .flatMap((folder: Notes) => folder.items)
+        .filter((item) => item.updatedAt !== undefined)
         .sort(
           (a: SingleNote, b: SingleNote) =>
             new Date(b.updatedAt.seconds * 1000).valueOf() -
@@ -125,7 +127,9 @@ export default function Home() {
     } else {
       const top10StarredItems = notesData
         .flatMap((folder: Notes) => folder.items)
-        .filter((item: any) => item?.starred === true)
+        .filter(
+          (item: any) => item?.starred === true && item.updatedAt !== undefined
+        )
         .sort(
           (a: SingleNote, b: SingleNote) =>
             new Date(b.updatedAt.seconds * 1000).valueOf() -
@@ -140,7 +144,7 @@ export default function Home() {
 
   const { isMobile } = useSidebar();
   return (
-    <div className={`${isMobile ? "w-77" : "w-full"}`}>
+    <div className={`${isMobile ? "w-77" : "w-full"} pb-5`}>
       <div className={`${isMobile ? "flex justify-center" : ""}`}>
         <div className="pl-10 pt-10">
           <div className="text-sm font-semibold">Express yourself...</div>
@@ -224,9 +228,10 @@ export default function Home() {
                             />
                           </div>
                           <div className="text-sm break-words">
-                            {item.content
-                              .replace(/(<([^>]+)>)/gi, "")
-                              .substring(0, 120)}
+                            {stripAndSpaceElements(item.content).substring(
+                              0,
+                              120
+                            )}
                           </div>
                           <div className="absolute text-xs bottom-5 left-5">
                             {item.updatedAt

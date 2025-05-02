@@ -40,6 +40,7 @@ import { EmojiPicker } from "@ferrucc-io/emoji-picker";
 import { useTasks } from "@/context/tasksContext";
 import { TasksFolder } from "@/types/types";
 import { toast } from "sonner";
+import CustomSkeleton from "@/components/ui/custom-skeleton";
 
 export default function TaskSidebar() {
   const {
@@ -161,7 +162,7 @@ export default function TaskSidebar() {
               </AlertDialog>
             </SidebarGroupLabel>
             <SidebarMenu>
-              {tasks &&
+              {tasks.length > 0 ? (
                 tasks.map((item) => (
                   <SidebarMenuItem key={item.id}>
                     <ContextMenu>
@@ -289,7 +290,10 @@ export default function TaskSidebar() {
                       </ContextMenuContent>
                     </ContextMenu>
                   </SidebarMenuItem>
-                ))}
+                ))
+              ) : (
+                <CustomSkeleton />
+              )}
             </SidebarMenu>
           </SidebarGroup>
         </ScrollArea>

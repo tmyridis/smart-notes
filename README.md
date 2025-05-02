@@ -1,54 +1,58 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# 🧠 Smart Notes
 
-Currently, two official plugins are available:
+Smart Notes is a powerful, all-in-one web application designed to help you stay organized and productive. Whether you're jotting down quick ideas, managing your daily tasks, or planning events on your calendar, Smart Notes has you covered.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## Expanding the ESLint configuration
+- 📝 Note Taking: Create, edit, and organize notes with ease.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- ✅ Task Management: Keep track of to-dos, mark tasks as complete, and stay focused.
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- 📅 Calendar Integration: Schedule and manage events right from your tasks dashboard.
+
+## Tech Stack
+
+- **Frontend:** React, TailwindCSS, shadcn/ui, Tiptap, dnd-kit, aceternityUI, originUI
+
+- **Backend:** Firebase
+
+- **Database:** Firebase Firestore
+
+## Run Locally
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/tmyridis/smart-notes
+cd smart-notes
+
+# 2. Install dependencies
+npm install
+
+# 3. Start the development server
+npm start
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Limitations and Known Issues
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Visual and UX Issues
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+- Limited responsiveness on very small screens
+
+### Technical Limitations
+
+- Tested only on Google Chrome and only PC.
+- No integration with external calendars (Google, Outlook, etc.)
+
+### Other Considerations
+
+- Small fixes across application can still be done (UI/UX and syncing to backend).
+
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE.md) file for details.
+
+
+
+

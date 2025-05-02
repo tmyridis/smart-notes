@@ -12,6 +12,7 @@ import Home from "./components/Home/index.tsx";
 import LandingPage from "./components/LandingPage/index.tsx";
 import { AuthProvider } from "./context/authContext.tsx";
 import Calendar from "./components/Calendar/index.tsx";
+import Profile from "./components/Profile/index.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -22,6 +23,7 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/" element={<LandingPage />} />
             <Route element={<App />}>
               <Route path="home" element={<Home />} />
+              <Route path="account" element={<Profile />} />
               <Route path="notes" element={<Notes />}>
                 <Route path=":id" element={<SingleNote />} />
               </Route>

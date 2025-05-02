@@ -278,6 +278,10 @@
       > div {
         flex: 1 1 auto;
       }
+
+      &:has(input[type="checkbox"]:checked) > div {
+        text-decoration: line-through;
+      }
     }
 
     input[type="checkbox"] {

@@ -262,7 +262,7 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
       // change the content
       if (note) {
         note.content = newContent;
-
+        note["updatedAt"] = Timestamp.fromDate(new Date());
         // get index of the note inside the items array
         //and update it
         var ind = folder?.items.findIndex((obj) => obj.id === note?.id);
@@ -276,7 +276,7 @@ const Tiptap = ({ notes }: { notes: Notes[] }) => {
   useEffect(() => {
     console.log("update content");
     updateContent();
-  }, [location]);
+  }, [location, notes]);
 
   return (
     <>

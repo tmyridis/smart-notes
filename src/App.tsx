@@ -21,10 +21,15 @@ import { TasksProvider } from "./context/tasksContext";
 import { AuthProvider } from "./context/authContext";
 import { Toaster } from "sonner";
 import { EventsProvider } from "./context/eventsContext";
+
+import Cookies from "js-cookie";
+
 function App() {
+  const defaultOpen = Cookies.get("sidebar_state") === "true";
+
   return (
     <>
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={defaultOpen}>
         <NotesProvider>
           <EventsProvider>
             <TasksProvider>
